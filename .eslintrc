@@ -1,0 +1,14 @@
+{
+  "globals": {
+    "ga": true,
+    "chrome": true
+  },
+  "rules": {
+    "no-restricted-globals": ["error", "event", "fdescribe"],
+    "parser": "babel-eslint"
+  },
+  "parserOptions": {
+    "parser": "babel-eslint",
+    "ecmaVersion": 6
+  }
+}

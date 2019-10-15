@@ -1,0 +1,43 @@
+// base color
+$blue: #324157;
+$light-blue: #3a71a8;
+$red: #c03639;
+$pink: #e65d6e;
+$green: #30b08f;
+$tiffany: #4ab7bd;
+$yellow: #fec171;
+$panGreen: #30b08f;
+
+// sidebar
+$menuText: #333333;
+$menuHoverText: #108ee9;
+$menuActiveText: #3e9be5;
+$subMenuActiveText: #333333; // https://github.com/ElemeFE/element/issues/12951
+$menuActiveBg: #eaf4ff;
+
+$menuBg: #fff;
+$menuHover: #eaf4ff;
+
+$subMenuBg: #ffffff; // 活动二级菜单
+$subMenuHover: #eaf4ff; // 活动二级菜单 hover
+
+$headerHeight: 105px;
+$sideBarWidth: 210px;
+$sideBarItemHeight: 45px;
+
+// the  :export directive is the magic sauce for webpack
+// https://www.bluematador.com/blog/how-to-share-variables-between-js-and-sass
+:export {
+  menuText: $menuText;
+  menuHoverText: $menuHoverText;
+  menuActiveText: $menuActiveText;
+  subMenuActiveText: $subMenuActiveText;
+  menuActiveBg: $menuActiveBg;
+  menuBg: $menuBg;
+  menuHover: $menuHover;
+  subMenuBg: $subMenuBg;
+  subMenuHover: $subMenuHover;
+  headerHeight: $headerHeight;
+  sideBarWidth: $sideBarWidth;
+  sideBarItemHeight: $sideBarItemHeight;
+}

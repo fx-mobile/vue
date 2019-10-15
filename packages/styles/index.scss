@@ -1,0 +1,22 @@
+@import './base/element-variables.scss';
+@import './base/variables.scss';
+@import './base/mixin.scss';
+@import './base/transition.scss';
+@import './base/element-ui.scss';
+@import './base/sidebar.scss';
+
+// 组件样式
+@import './components/tax-app-header.scss';
+
+// 页面框架
+@import './layout.scss';
+// 页面样式
+@import './views/login.scss';
+
+$bg: #f1f1f1;
+
+#app{
+  background-color: $bg;
+  height: 100vh;
+  width: 100vw;
+}
