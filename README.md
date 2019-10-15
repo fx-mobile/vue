@@ -29,7 +29,7 @@
 
 [tax-group-demo](https://github.com/fx-mobile/tax-group-demo)
 
-[tax-group-ui](https://github.com/fx-mobile/tax-group-ui)
+[@ttk/vue-ui](https://github.com/fx-mobile/vue-ui)
 
 
 ## 使用实例
