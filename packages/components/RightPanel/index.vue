@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { addClass, removeClass } from "tax-group-app/lib/utils";
+import { addClass, removeClass } from "@ttk/vue/lib/utils";
 
 export default {
   name: "RightPanel",

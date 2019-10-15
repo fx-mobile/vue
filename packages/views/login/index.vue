@@ -4,7 +4,7 @@
       <div class="logo">
         <img
           class="pic-404__child right"
-          src="@tax/packages/assets/tax/images/logo/logo_gd.png"
+          src="@ttkv/packages/assets/tax/images/logo/logo_gd.png"
           alt="404"
         />
       </div>
@@ -89,7 +89,7 @@
 </template>
 
 <script>
-import { validPhone } from "@tax/lib/utils/validate";
+import { validPhone } from "@ttkv/lib/utils/validate";
 export default {
   name: "Login",
   data() {

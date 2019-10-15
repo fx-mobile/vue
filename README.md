@@ -1,4 +1,4 @@
-# TAX-GROUP-APP
+# @ttk/vue
 
 > 这是一个基于 Vue+Vuex+Vue-router 进行封装的业务基础框架，默认提供登录，还有常用的API。支持路由覆盖，及去中心化等特点，开发者无需关注框架的实现，只需按Vue+Vuex开发规范进行数据绑定即可。
 > 
@@ -25,7 +25,7 @@
 
 ## 相关项目
 
-[tax-group-app](https://github.com/fx-mobile/tax-group-app)
+[@ttk/vue](https://github.com/fx-mobile/@ttk/vue)
 
 [tax-group-demo](https://github.com/fx-mobile/tax-group-demo)
 

@@ -7,7 +7,7 @@
 
 <script>
 // doc: https://panjiachen.github.io/vue-element-admin-site/feature/component/svg-icon.html#usage
-import { isExternal } from '@tax/utils/validate'
+import { isExternal } from '@ttkv/utils/validate'
 
 export default {
   name: 'SvgIcon',

@@ -19,18 +19,18 @@
 </template>
 
 <script>
-import RightPanel from "tax-group-app/packages/components/RightPanel";
-import TaxAppHeader from "tax-group-app/packages/components/TaxAppHeader";
+import RightPanel from "@ttk/vue/packages/components/RightPanel";
+import TaxAppHeader from "@ttk/vue/packages/components/TaxAppHeader";
 import {
   Settings,
   Sidebar,
   AppMain,
   TagsView
-} from "tax-group-app/packages/layout/components";
+} from "@ttk/vue/packages/layout/components";
 import { mapState } from "vuex";
-// import ResizeMixin from 'tax-group-app/packages/layout/mixin/ResizeHandler'
-// const{ Navbar, Sidebar, AppMain } = import('tax-group-app/packages/layout/components')
-// const ResizeMixin = import('tax-group-app/packages/layout/mixin/ResizeHandler')
+// import ResizeMixin from '@ttk/vue/packages/layout/mixin/ResizeHandler'
+// const{ Navbar, Sidebar, AppMain } = import('@ttk/vue/packages/layout/components')
+// const ResizeMixin = import('@ttk/vue/packages/layout/mixin/ResizeHandler')
 export default {
   name: "Layout",
   components: {

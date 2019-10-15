@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { isExternal } from 'tax-group-app/lib/utils/validate'
+import { isExternal } from '@ttk/vue/lib/utils/validate'
 
 export default {
   props: {

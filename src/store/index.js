@@ -31,7 +31,7 @@ const getViewModules = () => {
 
 const modulesFiles = require.context('./modules', true, /\.js$/)
 
-// 自动获取tax-group-app下的store/modules
+// 自动获取@ttk/vue下的store/modules
 const taxModules = modulesFiles.keys().reduce((modules, modulePath) => {
   const moduleName = modulePath.replace(/^\.\/(.*)\.\w+$/, '$1')
   const value = modulesFiles(modulePath)

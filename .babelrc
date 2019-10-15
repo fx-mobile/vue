@@ -55,7 +55,7 @@
     //       "./"
     //     ],
     //     "alias": {
-    //       "@tax": "tax-group-app"
+    //       "@ttkv": "@ttk/vue"
     //     }
     //   }
     // ]
@@ -110,7 +110,7 @@
   //             "./"
   //           ],
   //           "alias": {
-  //             "tax-group-app/src": "tax-group-app/lib"
+  //             "@ttk/vue/src": "@ttk/vue/lib"
   //           }
   //         }
   //       ]

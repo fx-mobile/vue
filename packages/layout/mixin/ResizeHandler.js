@@ -1,4 +1,4 @@
-import { store } from 'tax-group-app'
+import { store } from '@ttk/vue'
 
 const { body } = document
 const WIDTH = 992 // refer to Bootstrap's responsive design

@@ -3,7 +3,7 @@
     <div class="logo">
       <img
         class="pic-404__child right"
-        src="@tax/packages/assets/tax/images/logo/logo_gd.png"
+        src="@ttkv/packages/assets/tax/images/logo/logo_gd.png"
         alt="404"
       />
     </div>

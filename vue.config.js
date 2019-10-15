@@ -33,7 +33,7 @@ module.exports = {
     name: name,
     resolve: {
       alias: {
-        '@tax': resolve('packages')
+        '@ttkv': resolve('packages')
       }
     },
     externals: _externals()

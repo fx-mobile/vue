@@ -3,7 +3,7 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-import Layout from 'tax-group-app/packages/layout'
+import Layout from '@ttk/vue/packages/layout'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -32,13 +32,13 @@ import Layout from 'tax-group-app/packages/layout'
 export const constantRoutes = [
   {
     path: '/login',
-    component: () => import('tax-group-app/packages/views/login/index'),
+    component: () => import('@ttk/vue/packages/views/login/index'),
     hidden: true,
     meta: { title: 'ligin' }
   },
   {
     path: '/404',
-    component: () => import('tax-group-app/packages/views/404'),
+    component: () => import('@ttk/vue/packages/views/404'),
     hidden: true
   },
   {
@@ -102,7 +102,7 @@ export const generateRouter = (routerList) => {
 const parseRouterItem = (item) => {
   const obj = {
     path: item.url === '#' ? item.code : item.url,
-    component: item.functionType === 'menu' ? Layout : () => import('tax-group-app/packages/views/404'),
+    component: item.functionType === 'menu' ? Layout : () => import('@ttk/vue/packages/views/404'),
     name: item.name,
     meta: {
       title: item.name,
