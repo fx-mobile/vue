@@ -1,9 +1,10 @@
 {
   "name": "@ttk/vue",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "lib/index.js",
   "module": "lib/index.js",
   "license": "MIT",
+  "private": false,
   "scripts": {
     "dev": "cross-env babel src --watch --out-dir lib",
     "build:lib": "rimraf lib && cross-env BABEL_ENV=utils babel src --out-dir lib",
