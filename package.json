@@ -5,6 +5,10 @@
   "module": "lib/index.js",
   "license": "MIT",
   "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fx-mobile/vue"
+  },
   "scripts": {
     "dev": "cross-env babel src --watch --out-dir lib",
     "build:lib": "rimraf lib && cross-env BABEL_ENV=utils babel src --out-dir lib",
@@ -22,8 +26,8 @@
   ],
   "style": "views/index.css",
   "dependencies": {
+    "@ttk/vue-ui": "^1.0.2",
     "path-to-regexp": "^3.1.0",
-    "tax-group-ui": "^0.0.1",
     "vue": "^2.6.10",
     "vue-router": "^3.1.3",
     "vuex": "^3.1.1"

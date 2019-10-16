@@ -6,7 +6,7 @@ import { registryRouter, scanRouter } from './router'
 import Store from './store'
 import getters from './store/getters'
 
-import TaxGroupUI from 'tax-group-ui'
+import TaxGroupUI from '@ttk/vue-ui'
 Vue.use(TaxGroupUI)
 // Vue.use(TaxViews)
 Vue.use(Vuex)

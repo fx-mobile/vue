@@ -25,7 +25,7 @@
 
 ## 相关项目
 
-[@ttk/vue](https://github.com/fx-mobile/@ttk/vue)
+[@ttk/vue](https://github.com/fx-mobile/vue)
 
 [tax-group-demo](https://github.com/fx-mobile/tax-group-demo)
 

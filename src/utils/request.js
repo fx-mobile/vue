@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { MessageBox, Message } from 'tax-group-ui'
+import { MessageBox, Message } from '@ttk/vue-ui'
 import { store } from '../application'
 import { getToken } from './auth'
 
