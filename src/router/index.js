@@ -41,28 +41,6 @@ export const constantRoutes = [
     component: () => import('@ttk/vue/packages/views/404'),
     hidden: true
   },
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/home',
-    name: 'Home',
-    children: [{
-      path: '/home',
-      name: 'Table',
-      component: () => import('@/views/table'),
-      meta: { title: 'Table', icon: 's-home', affix: true }
-    }]
-  },
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
-      }
-    ]
-  },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
@@ -70,7 +48,7 @@ export const constantRoutes = [
 
 // 扫描业务代码中views里的.router.js文件，并返回路由数组
 export function scanRouter() {
-  const routerFiles = require.context('@/views', true, /\.router\.js$/)
+  const routerFiles = require.context('@/pages', true, /\.router\.js$/)
   const modules = routerFiles.keys().map((key) => routerFiles(key).default)
   return modules
 }

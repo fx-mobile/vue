@@ -19,7 +19,7 @@
 
 // 获取业务代码中views文件夹下的store
 const getViewModules = () => {
-  const modulesFiles = require.context('@/views', true, /\.store\.js$/)
+  const modulesFiles = require.context('@/pages', true, /\.store\.js$/)
   const modules = modulesFiles.keys().reduce((modules, modulePath) => {
     const moduleName = modulePath.replace(/^\.\/(.*)\/(.*)\.store\.\w+$/, '$2')
     const value = modulesFiles(modulePath)

@@ -12,9 +12,8 @@ Vue.use(TaxGroupUI)
 Vue.use(Vuex)
 
 class SingletonApp {
-  constructor() {
-    console.log('singletonApp')
-  }
+  // constructor() {
+  // }
   static getInstance() {
     if (!this.instance) {
       this.instance = new SingletonApp()
