@@ -1,0 +1,37 @@
+
+.el-button {
+    border-radius: 2px;
+}
+
+// 重置input样式
+input,
+.el-input__inner {
+    border-radius: 2px;
+}
+
+//radio 样式
+.el-radio__input.is-checked .el-radio__inner {
+    border-color: $--color-primary;
+    background  : white;
+}
+
+.el-radio__inner::after {
+    background-color: $--color-primary;
+    width: 5px;
+    height: 5px;
+}
+
+// 弹框
+.el-dialog__header {
+    border-bottom: 1px #{$--border-color-light} solid;
+}
+
+// 重置表格样式
+.el-table th {
+    background-color: #f7f7f7;
+}
+
+.el-table--medium th,
+.el-table--medium td {
+    padding: 5px 8px;
+}

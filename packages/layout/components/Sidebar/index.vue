@@ -30,8 +30,6 @@ export default {
       'tax_sidebar'
     ]),
     routes() {
-      console.log('jjjjjeeeeeeeeee', this.$router.options.routes);
-      
       return this.$router.options.routes
     },
     activeMenu() {
