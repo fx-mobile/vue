@@ -4,7 +4,8 @@
   width: 100%;
   position: relative;
   top: 0;
-  overflow: scroll;
+  // box-sizing: border-box;
+  // overflow: scroll;
 
   .main-container {
     min-height: 100%;

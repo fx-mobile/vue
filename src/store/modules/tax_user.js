@@ -7,12 +7,12 @@ const state = {
   name: '',
   avatar: '',
   nav: [],
-  inof: {}
+  info: null
 }
 
 const mutations = {
   TAX_SET_USER_INFO: (state, userInfo) => {
-    state.inof = userInfo
+    state.info = userInfo
     localStorage.setItem("userInfo", JSON.stringify(userInfo))
   },
   TAX_SET_USER_INFO_FROM_LOCAL: (state, type) => {

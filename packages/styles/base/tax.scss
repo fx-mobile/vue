@@ -1,3 +1,6 @@
+* {
+    font-family: "微软雅黑";
+}
 
 .el-button {
     border-radius: 2px;
@@ -17,8 +20,8 @@ input,
 
 .el-radio__inner::after {
     background-color: $--color-primary;
-    width: 5px;
-    height: 5px;
+    width           : 5px;
+    height          : 5px;
 }
 
 // 弹框
