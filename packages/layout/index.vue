@@ -1,11 +1,11 @@
 <template>
   <div :class="classObj" class="app-wrapper">
     <tax-app-header :class="{'fixed-header':fixedHeader}" />
+    <sidebar class="sidebar-container" />
     <div class="main-container">
-      <sidebar class="sidebar-container" />
       <app-main />
       <right-panel v-if="showSettings">
-        <!-- <settings /> -->
+        <settings />
       </right-panel>
     </div>
     <!-- <sidebar class="sidebar-container" />

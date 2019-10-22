@@ -8,11 +8,17 @@
 
 // 重置input样式
 input,
+.el-textarea,
+.el-textarea__inner,
 .el-input__inner {
     border-radius: 2px;
 }
 
 //radio 样式
+.el-radio__input {
+    zoom: 130%;
+}
+
 .el-radio__input.is-checked .el-radio__inner {
     border-color: $--color-primary;
     background  : white;
@@ -20,8 +26,55 @@ input,
 
 .el-radio__inner::after {
     background-color: $--color-primary;
-    width           : 5px;
-    height          : 5px;
+    width           : 6px;
+    height          : 6px;
+}
+
+
+.el-checkbox__inner {
+    zoom: 130%;
+}
+
+
+.el-switch {
+    zoom: 130%;
+
+    &.is-checked .el-switch__core::before {
+        content     : "ON";
+        color       : white;
+        font-size   : 2px;
+        padding-left: 2px;
+        top         : -3px;
+        position    : relative;
+
+    }
+
+    &.is-checked .el-switch__core::after {
+        background: white;
+        width     : 14px;
+        height    : 14px;
+    }
+
+    .el-switch__core {
+        background: white;
+
+        &::after {
+            background: #DCDFE6;
+            width     : 14px;
+            height    : 14px;
+            top: 2px;
+            left: 2px;
+        }
+
+        &::before {
+            content     : "OFF";
+            font-size   : 2px;
+            top         : -3px;
+            padding-left: 17px;
+            color       : #DCDFE6;
+            position    : relative;
+        }
+    }
 }
 
 // 弹框
