@@ -3,18 +3,12 @@
     <tax-app-header :class="{'fixed-header':fixedHeader}" />
     <sidebar class="sidebar-container" />
     <div class="main-container">
+      <tags-view />
       <app-main />
       <right-panel v-if="showSettings">
         <settings />
       </right-panel>
     </div>
-    <!-- <sidebar class="sidebar-container" />
-    <div class="main-container">
-      <div :class="{'fixed-header':fixedHeader}">
-        <navbar />
-      </div>
-      
-    </div>-->
   </div>
 </template>
 
@@ -22,10 +16,10 @@
 import RightPanel from "@ttk/vue/packages/components/RightPanel";
 import TaxAppHeader from "@ttk/vue/packages/components/TaxAppHeader";
 import {
+  TagsView,
   Settings,
   Sidebar,
   AppMain,
-  TagsView
 } from "@ttk/vue/packages/layout/components";
 import { mapState } from "vuex";
 // import ResizeMixin from '@ttk/vue/packages/layout/mixin/ResizeHandler'

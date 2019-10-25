@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
+import { SingletonApp, app, start } from "../application"
 Vue.use(Router)
 
 import Layout from '@ttk/vue/packages/layout'
@@ -19,8 +19,10 @@ import Layout from '@ttk/vue/packages/layout'
     roles: ['admin','editor']    control the page roles (you can set multiple roles)
     title: 'title'               the name show in sidebar and breadcrumb (recommend set)
     icon: 'svg-name'             the icon show in the sidebar
-    breadcrumb: false            if set false, the item will hidden in breadcrumb(default is true)
-    activeMenu: '/example/list'  if set path, the sidebar will highlight the path you set
+    breadcrumb: false            if set false, the item will hidden in breadcrumb(default is true) false: 不在面包屑中显示
+    activeMenu: '/example/list'  if set path, the sidebar will highlight the path you set 不在指定菜单中显示
+    affix: true                  标签不可关闭
+    noCache: true
   }
  */
 
@@ -58,9 +60,12 @@ export function registryRouter(routes = []) {
   if (!Array.isArray(routes)) {
     console.error('registryRouter: 注册的路由必须是一个数组')
   }
+  const app = SingletonApp.getInstance();
+  const rou = routes.concat(constantRoutes)
+  app.setRouters(rou);
   const _routes = new Router({
     scrollBehavior: () => ({ y: 0 }),
-    routes: routes.concat(constantRoutes)
+    routes: rou //routes.concat(constantRoutes)
   })
   return _routes
 }

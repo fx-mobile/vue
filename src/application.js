@@ -12,13 +12,20 @@ Vue.use(TaxGroupUI)
 Vue.use(Vuex)
 
 class SingletonApp {
-  // constructor() {
-  // }
+  constructor() {
+    this.routers = []
+  }
   static getInstance() {
     if (!this.instance) {
       this.instance = new SingletonApp()
     }
     return this.instance
+  }
+  setRouters(roues){
+    this.routers = this.routers.concat(roues)
+  }
+  getRouters(){
+    return this.routers;
   }
 }
 
@@ -65,6 +72,7 @@ const start = () => {
 const app = SingletonApp.getInstance()
 
 export {
+  SingletonApp,
   app,
   registerFun,
   start,
