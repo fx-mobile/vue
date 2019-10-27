@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import App from "../packages/App"
 // import {App} from '../views/index.umd'
 import { registryRouter, scanRouter } from './router'
 import Store from './store'
@@ -65,7 +64,7 @@ const start = () => {
     el: '#app',
     router,
     store,
-    render: h => h(App)
+    render: h => h('div', {attrs: {id: 'app'}}, [h('router-view')])
   })
 }
 

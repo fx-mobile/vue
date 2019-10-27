@@ -3,8 +3,6 @@ import Router from 'vue-router'
 import { SingletonApp, app, start } from "../application"
 Vue.use(Router)
 
-import Layout from '@ttk/vue/packages/layout'
-
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -32,18 +30,6 @@ import Layout from '@ttk/vue/packages/layout'
  * all roles can be accessed
  */
 export const constantRoutes = [
-  {
-    path: '/login',
-    component: () => import('@ttk/vue/packages/views/login/index'),
-    hidden: true,
-    meta: { title: 'ligin' }
-  },
-  {
-    path: '/404',
-    component: () => import('@ttk/vue/packages/views/404'),
-    hidden: true
-  },
-
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
@@ -85,7 +71,7 @@ export const generateRouter = (routerList) => {
 const parseRouterItem = (item) => {
   const obj = {
     path: item.url === '#' ? item.code : item.url,
-    component: item.functionType === 'menu' ? Layout : () => import('@ttk/vue/packages/views/404'),
+    // component: item.functionType === 'menu' ? Layout : () => import('@/pages/404'),
     name: item.name,
     meta: {
       title: item.name,
