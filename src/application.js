@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 // import {App} from '../views/index.umd'
-import { registryRouter, scanRouter } from './router'
+import router from './router'
 import Store from './store'
 import getters from './store/getters'
 
@@ -12,6 +12,8 @@ Vue.use(Vuex)
 
 class SingletonApp {
   constructor() {
+    this.vueApp = null;
+    this.router = null;
     this.routers = []
   }
   static getInstance() {
@@ -20,11 +22,30 @@ class SingletonApp {
     }
     return this.instance
   }
-  setRouters(roues){
+  setRouters(roues) {
     this.routers = this.routers.concat(roues)
   }
-  getRouters(){
+  getRouters() {
     return this.routers;
+  }
+  getRouter(){
+    return this.router
+  }
+  start(_store) {
+    // if(!store){
+    //   console.error('router和store参数是必填的。')
+    //   return
+    // }
+    if (!this.vueApp) {
+      this.vueApp = new Vue({
+        el: '#app',
+        router,
+        store,
+        render: h => h('div', { attrs: { id: 'app' } }, [h('router-view')])
+      })
+    }else{
+      console.warn('Vue 已经实例化，请勿重复实例化。')
+    }
   }
 }
 
@@ -43,8 +64,8 @@ const registerFun = (funName, fun) => {
   const instance = SingletonApp.getInstance()
   instance[funName] = fun
 }
-const _iewRouter = scanRouter()
-const router = registryRouter(_iewRouter)
+// const _iewRouter = scanRouter()
+// const router = registryRouter(_iewRouter)
 const _viewModules = Store.getViewModules()
 // const _modules = Store.getModulesFromFile()
 const _taxModues = Store.modules
@@ -53,28 +74,18 @@ const store = new Vuex.Store({
   modules: {
     // ..._modules,
     ..._viewModules,
-    ..._taxModues 
+    ..._taxModues
   },
   // },
   getters
 })
 
-const start = () => {
-  new Vue({
-    el: '#app',
-    router,
-    store,
-    render: h => h('div', {attrs: {id: 'app'}}, [h('router-view')])
-  })
-}
 
 const app = SingletonApp.getInstance()
 
 export {
   SingletonApp,
-  app,
   registerFun,
-  start,
-  router,
+  // router,
   store
 }

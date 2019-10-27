@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import { SingletonApp, app, start } from "../application"
 Vue.use(Router)
 
 /**
@@ -16,7 +15,7 @@ Vue.use(Router)
  * meta : {
     roles: ['admin','editor']    control the page roles (you can set multiple roles)
     title: 'title'               the name show in sidebar and breadcrumb (recommend set)
-    icon: 'svg-name'             the icon show in the sidebar
+    icon: 'icon-name'             the icon show in the sidebar
     breadcrumb: false            if set false, the item will hidden in breadcrumb(default is true) false: 不在面包屑中显示
     activeMenu: '/example/list'  if set path, the sidebar will highlight the path you set 不在指定菜单中显示
     affix: true                  标签不可关闭
@@ -33,28 +32,6 @@ export const constantRoutes = [
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
-
-// 扫描业务代码中views里的.router.js文件，并返回路由数组
-export function scanRouter() {
-  const routerFiles = require.context('@/pages', true, /\.router\.js$/)
-  const modules = routerFiles.keys().map((key) => routerFiles(key).default)
-  return modules
-}
-
-// 注册并返回路由
-export function registryRouter(routes = []) {
-  if (!Array.isArray(routes)) {
-    console.error('registryRouter: 注册的路由必须是一个数组')
-  }
-  const app = SingletonApp.getInstance();
-  const rou = routes.concat(constantRoutes)
-  app.setRouters(rou);
-  const _routes = new Router({
-    scrollBehavior: () => ({ y: 0 }),
-    routes: rou //routes.concat(constantRoutes)
-  })
-  return _routes
-}
 
 // 根据接口返回的路由生成前端路由
 export const generateRouter = (routerList) => {
@@ -93,9 +70,14 @@ const createRouter = () => new Router({
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })
-
+const router = createRouter()
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export const resetRouter = (_router) => {
   const newRouter = createRouter()
-  _router.matcher = newRouter.matcher // reset router
+  router.matcher = newRouter.matcher // reset router
 }
+export const concatRouter = (routers) => {
+  constantRoutes.unshift(...routers)
+  console.log('09999999', constantRoutes);
+}
+export default router
