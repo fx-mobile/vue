@@ -28,9 +28,6 @@ class SingletonApp {
   getRouters() {
     return this.routers;
   }
-  getRouter(){
-    return this.router
-  }
   start(_store) {
     // if(!store){
     //   console.error('router和store参数是必填的。')
@@ -64,8 +61,7 @@ const registerFun = (funName, fun) => {
   const instance = SingletonApp.getInstance()
   instance[funName] = fun
 }
-// const _iewRouter = scanRouter()
-// const router = registryRouter(_iewRouter)
+
 const _viewModules = Store.getViewModules()
 // const _modules = Store.getModulesFromFile()
 const _taxModues = Store.modules
@@ -79,7 +75,6 @@ const store = new Vuex.Store({
   // },
   getters
 })
-
 
 const app = SingletonApp.getInstance()
 

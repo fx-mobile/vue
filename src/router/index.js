@@ -78,6 +78,5 @@ export const resetRouter = (_router) => {
 }
 export const concatRouter = (routers) => {
   constantRoutes.unshift(...routers)
-  console.log('09999999', constantRoutes);
 }
 export default router
