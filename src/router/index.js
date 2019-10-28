@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import { SingletonApp } from '../application'
 Vue.use(Router)
 
 /**
@@ -46,14 +47,15 @@ export const generateRouter = (routerList) => {
   return routers;
 }
 const parseRouterItem = (item) => {
+  const app = SingletonApp.getInstance()
+  const isMenu = item.functionType === 'menu'
+  const hasChild = item.hasOwnProperty('childSecFunctioinDTOs')
   const obj = {
-    path: item.url === '#' ? item.code : item.url,
-    // component: item.functionType === 'menu' ? Layout : () => import('@/pages/404'),
+    path: hasChild ? `/${item.code}` : item.code, // isMenu ? `/${item.url === '#' ? item.code : item.url}` : item.url,
+    component: hasChild ? app.layout : () => import('@/pages/404'),
     name: item.name,
     meta: {
-      title: item.name,
-      // icon: 'lock',
-      roles: ['admin']
+      title: item.name, icon: 'fsicon-tree-dot', affix: item.functionType === 'desk'
     }
   }
   if (Array.isArray(item.childSecFunctioinDTOs)) {

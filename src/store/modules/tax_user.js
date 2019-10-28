@@ -82,10 +82,20 @@ const actions = {
       resolve();
     })
   },
-
-  getNav({ commit }, depId) {
+  getNav({ state }) {
+    return state.nav;
+  },
+  fetchNav({ commit }) {
     return new Promise(async (resolve, reject) => {
-      getNav(depId).then((res) => {
+      let depId;
+      if(!state.info){
+        commit('TAX_SET_USER_INFO_FROM_LOCAL')
+        depId = state.info.depId
+      }else{
+        depId = state.info.depId
+      }
+
+      getNav({depId}).then((res) => {
         try {
           const ttkrouter = generateRouter(res.body)
           // resetRouter(router);

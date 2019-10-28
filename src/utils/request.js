@@ -2,6 +2,7 @@ import axios from 'axios'
 import { MessageBox, Message } from '@ttk/vue-ui'
 import { store } from '../application'
 import { getToken } from './auth'
+import { uuid } from './index'
 
 // create an axios instance
 const service = axios.create({
@@ -13,12 +14,14 @@ const service = axios.create({
 // request interceptor
 service.interceptors.request.use(
   config => {
+    const requestId = uuid(32, 12)
+    config.url += `&requestId=${requestId}`
     // do something before request is sent
-
-    if (store.getters.token) {
+    if (store.getters.tax_token) {
       // let each request carry token
       // ['X-Token'] is a custom headers key
       // please modify it according to the actual situation
+      config.url += `&token=${getToken()}`
       config.headers['X-Token'] = getToken()
     }
     return config
@@ -79,5 +82,22 @@ service.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+
+export async function post(url, data = {}) {
+  return await service({
+    url,
+    method: 'post',
+    data: { ...data }
+  })
+}
+
+export async function get(url, data = {}) {
+  return await service({
+    url,
+    method: 'get',
+    data: { ...data }
+  })
+}
+
 
 export default service

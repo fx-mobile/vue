@@ -12,9 +12,8 @@ Vue.use(Vuex)
 
 class SingletonApp {
   constructor() {
-    this.vueApp = null;
-    this.router = null;
-    this.routers = []
+    this.vueApp = null
+    this.router = null
   }
   static getInstance() {
     if (!this.instance) {
@@ -22,11 +21,8 @@ class SingletonApp {
     }
     return this.instance
   }
-  setRouters(roues) {
-    this.routers = this.routers.concat(roues)
-  }
-  getRouters() {
-    return this.routers;
+  setLayout(component){
+    this.layout = component
   }
   start(_store) {
     // if(!store){
