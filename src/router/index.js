@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import { SingletonApp } from '../application'
+const _import = require('./_import_' + process.env.NODE_ENV) //获取组件的方法
 Vue.use(Router)
 
 /**
@@ -50,9 +51,10 @@ const parseRouterItem = (item) => {
   const app = SingletonApp.getInstance()
   const isMenu = item.functionType === 'menu'
   const hasChild = item.hasOwnProperty('childSecFunctioinDTOs')
+  console.log('item', item.name, item.code)
   const obj = {
-    path: hasChild ? `/${item.code}` : item.code, // isMenu ? `/${item.url === '#' ? item.code : item.url}` : item.url,
-    component: hasChild ? app.layout : () => import('@/pages/404'),
+    path: item.url, // isMenu ? `/${item.url === '#' ? item.code : item.url}` : item.url,
+    component: hasChild ? app.layout : _import(item.code),  //() => import('@/pages/404'),
     name: item.name,
     meta: {
       title: item.name, icon: 'fsicon-tree-dot', affix: item.functionType === 'desk'

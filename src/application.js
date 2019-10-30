@@ -1,13 +1,11 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-// import {App} from '../views/index.umd'
 import router from './router'
 import Store from './store'
 import getters from './store/getters'
 
 import TaxGroupUI from '@ttk/vue-ui'
 Vue.use(TaxGroupUI)
-// Vue.use(TaxViews)
 Vue.use(Vuex)
 
 class SingletonApp {
@@ -25,10 +23,6 @@ class SingletonApp {
     this.layout = component
   }
   start(_store) {
-    // if(!store){
-    //   console.error('router和store参数是必填的。')
-    //   return
-    // }
     if (!this.vueApp) {
       this.vueApp = new Vue({
         el: '#app',
@@ -59,16 +53,13 @@ const registerFun = (funName, fun) => {
 }
 
 const _viewModules = Store.getViewModules()
-// const _modules = Store.getModulesFromFile()
 const _taxModues = Store.modules
-
 const store = new Vuex.Store({
   modules: {
     // ..._modules,
     ..._viewModules,
     ..._taxModues
   },
-  // },
   getters
 })
 
@@ -77,6 +68,5 @@ const app = SingletonApp.getInstance()
 export {
   SingletonApp,
   registerFun,
-  // router,
   store
 }

@@ -33,7 +33,7 @@ export function parseTime(time, cFormat) {
   const time_str = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result, key) => {
     let value = formatObj[key]
     // Note: getDay() returns 0 on Sunday
-    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value ] }
+    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value] }
     if (result.length > 0 && value < 10) {
       value = '0' + value
     }
@@ -159,12 +159,12 @@ export function param2Obj(url) {
   }
   return JSON.parse(
     '{"' +
-      decodeURIComponent(search)
-        .replace(/"/g, '\\"')
-        .replace(/&/g, '","')
-        .replace(/=/g, '":"')
-        .replace(/\+/g, ' ') +
-      '"}'
+    decodeURIComponent(search)
+      .replace(/"/g, '\\"')
+      .replace(/&/g, '","')
+      .replace(/=/g, '":"')
+      .replace(/\+/g, ' ') +
+    '"}'
   )
 }
 
@@ -243,7 +243,7 @@ export function getTime(type) {
 export function debounce(func, wait, immediate) {
   let timeout, args, context, timestamp, result
 
-  const later = function() {
+  const later = function () {
     // 据上一次触发时间间隔
     const last = +new Date() - timestamp
 
@@ -260,7 +260,7 @@ export function debounce(func, wait, immediate) {
     }
   }
 
-  return function(...args) {
+  return function (...args) {
     context = this
     timestamp = +new Date()
     const callNow = immediate && !timeout
@@ -352,22 +352,39 @@ export function uuid(len, radix) {
   let i
   radix = radix || chars.length;
   if (len) {
-      // Compact form
-      for (i = 0; i < len; i++) uuid[i] = chars[0 | Math.random() * radix];
+    for (i = 0; i < len; i++) uuid[i] = chars[0 | Math.random() * radix];
   } else {
-      // rfc4122, version 4 form
-      var r;
-      // rfc4122 requires these characters
-      uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
-      uuid[14] = '4';
-      // Fill in random data.  At i==19 set the high bits of clock sequence as
-      // per rfc4122, sec. 4.1.5
-      for (i = 0; i < 36; i++) {
-          if (!uuid[i]) {
-              r = 0 | Math.random() * 16;
-              uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
-          }
+    let r;
+    // rfc4122 requires these characters
+    uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+    uuid[14] = '4';
+    // Fill in random data.  At i==19 set the high bits of clock sequence as
+    // per rfc4122, sec. 4.1.5
+    for (i = 0; i < 36; i++) {
+      if (!uuid[i]) {
+        r = 0 | Math.random() * 16;
+        uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
       }
+    }
   }
   return uuid.join('');
+}
+
+// 数组对象排序， 返回一个新对象
+export function objectArraySort(arr, key) {
+  const sortFun = (key) => {
+    return (n, m) => {
+      const valueN = n[key]
+      const valueM = m[key]
+      if (valueN < valueM) {
+        return 1
+      } else if (valueN > valueM) {
+        return -1
+      } else {
+        return 0
+      }
+    }
+  }
+  const sortArr = arr.sort(sortFun(key))
+  return sortArr
 }
