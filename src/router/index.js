@@ -51,10 +51,9 @@ const parseRouterItem = (item) => {
   const app = SingletonApp.getInstance()
   const isMenu = item.functionType === 'menu'
   const hasChild = item.hasOwnProperty('childSecFunctioinDTOs')
-  console.log('item', item.name, item.code)
   const obj = {
-    path: item.url, // isMenu ? `/${item.url === '#' ? item.code : item.url}` : item.url,
-    component: hasChild ? app.layout : _import(item.code),  //() => import('@/pages/404'),
+    path: item.url, 
+    component: hasChild ? app.layout : _import(item.code), 
     name: item.name,
     meta: {
       title: item.name, icon: 'fsicon-tree-dot', affix: item.functionType === 'desk'
