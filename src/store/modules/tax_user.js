@@ -11,13 +11,17 @@ const state = {
 }
 
 const mutations = {
+  TAX_GET_USER_INFO: (state) => {
+    return state.info
+  },
   TAX_SET_USER_INFO: (state, userInfo) => {
     state.info = userInfo
     localStorage.setItem("userInfo", JSON.stringify(userInfo))
+    return state.info
   },
-  TAX_SET_USER_INFO_FROM_LOCAL: (state, type) => {
+  TAX_SET_USER_INFO_FROM_LOCAL: (state) => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'))
-    state.info = userInfo
+    return state.info = userInfo
   },
   TAX_SET_TOKEN: (state, token) => {
     state.token = token
@@ -94,7 +98,7 @@ const actions = {
       depId = state.info.depId
       getNav({ depId }).then((res) => {
         try {
-          const ttkrouter = generateRouter(res.body)
+          // const ttkrouter = generateRouter(res.body)
           // resetRouter(router);
           // router.addRoutes(ttkrouter)
           commit('TAX_SET_NAV', ttkrouter)

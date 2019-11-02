@@ -1,5 +1,7 @@
 import { constantRoutes } from '../../router'
 
+// 保存路由权限的store模块
+
 const state = {
   routes: [],
   addRoutes: []
@@ -18,6 +20,9 @@ const actions = {
       commit('SET_ROUTES', routes)
       resolve()
     })
+  },
+  getRoutes() {
+    return state.routes
   }
 }
 

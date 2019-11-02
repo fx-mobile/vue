@@ -35,6 +35,29 @@ export const constantRoutes = [
   { path: '*', redirect: '/404', hidden: true }
 ]
 
+export const g = (routerList, pFunId = null, pParentId = null) => {
+
+  routerList.forEach((item, index) => {
+    if (item.subNodeFlag === '1') {
+      g(item.childSecFunctioinDTOs, item.functioinId, item.parentId)
+    } else {
+      if (!pParentId) {
+
+      } else {
+        switch (item.functionType) {
+          case "menu":
+            break
+          case "button":
+            break
+          default:
+            break
+        }
+
+      }
+    }
+  })
+}
+
 // 根据接口返回的路由生成前端路由
 export const generateRouter = (routerList) => {
   const routers = [];
@@ -52,8 +75,8 @@ const parseRouterItem = (item) => {
   const isMenu = item.functionType === 'menu'
   const hasChild = item.hasOwnProperty('childSecFunctioinDTOs')
   const obj = {
-    path: item.url, 
-    component: hasChild ? app.layout : _import(item.code), 
+    path: item.url,
+    component: hasChild ? app.layout : _import(item.code),
     name: item.name,
     meta: {
       title: item.name, icon: 'fsicon-tree-dot', affix: item.functionType === 'desk'
