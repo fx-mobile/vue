@@ -99,5 +99,11 @@ export async function get(url, data = {}) {
   })
 }
 
+export async function postAwait(url, data){
+  return await service.post(url, JSON.stringify(data))
+}
+export async function getAwait(){
+  return await service.get(url, JSON.stringify(data))
+}
 
 export default service
