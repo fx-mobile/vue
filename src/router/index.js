@@ -35,31 +35,68 @@ export const constantRoutes = [
   { path: '*', redirect: '/404', hidden: true }
 ]
 
-export const g = (routerList, pFunId = null, pParentId = null) => {
-
-  routerList.forEach((item, index) => {
-    if (item.subNodeFlag === '1') {
-      g(item.childSecFunctioinDTOs, item.functioinId, item.parentId)
-    } else {
-      if (!pParentId) {
-
-      } else {
-        switch (item.functionType) {
-          case "menu":
-            break
-          case "button":
-            break
-          default:
-            break
-        }
-
+// 渲染含有子级的菜单
+/**
+ * parentMenu
+ * 渲染含有子级的菜单
+ * menuType: top 顶级菜单， menu: 含有子级的普通菜单，page: 菜单中最一级需要指定具体页面
+ */
+function parentMenu(item, menuType = 'menu') {
+  const app = SingletonApp.getInstance()
+  let _component
+  switch (menuType) {
+    case "top":
+      _component = app.layout
+      break
+    case "page":
+      _component = {
+        render: c => c("router-view")
       }
+    default:
+      _component = _import(item.code)
+  }
+  return {
+    path: item.url,
+    component: _component,
+    name: item.name,
+    meta: {
+      title: item.name, icon: item.imageUrl, affix: item.functionType === 'desk'
     }
-  })
+  }
+}
+
+export const generateRouter = (routerList, pFunId = null, pParentId = null) => {
+  const routers = []
+  if (Array.isArray(routerList)) {
+    routerList.forEach((item, index) => {
+      routers.push(parseRouterItem(item, pFunId, pParentId))
+    })
+  }
+  return routers
+}
+
+const parseRouterItem = (item, pFunId, pParentId) => {
+  let obj
+  if (!pParentId) {
+    obj = parentMenu(item, 'top')
+    if (item.subNodeFlag == 0) {
+      obj.children = generateRouter([item], item.functioinId, item.parentId)
+    } else {
+      obj.children = generateRouter(item.childSecFunctioinDTOs, item.functioinId, item.parentId)
+    }
+  } else {
+    if (item.subNodeFlag == 0) {
+      obj = parentMenu(item, 'page')
+    } else {
+      obj = parentMenu(item)
+      obj.children = generateRouter(item.childSecFunctioinDTOs, item.functioinId, item.parentId)
+    }
+  }
+  return obj
 }
 
 // 根据接口返回的路由生成前端路由
-export const generateRouter = (routerList) => {
+export const _g = (routerList) => {
   const routers = [];
   if (Array.isArray(routerList)) {
     routerList.forEach((item, index) => {
@@ -70,7 +107,7 @@ export const generateRouter = (routerList) => {
   }
   return routers;
 }
-const parseRouterItem = (item) => {
+const _parseRouterItem = (item) => {
   const app = SingletonApp.getInstance()
   const isMenu = item.functionType === 'menu'
   const hasChild = item.hasOwnProperty('childSecFunctioinDTOs')

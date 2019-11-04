@@ -2,6 +2,7 @@ import { login, logout, getInfo, getNav } from '../../api/user'
 import { getToken, setToken, removeToken } from '../../utils/auth'
 import { generateRouter, resetRouter } from '../../router'
 import { router } from '../../application'
+import { postAwait } from '../../utils/request'
 const state = {
   token: getToken(),
   name: '',
@@ -89,28 +90,37 @@ const actions = {
   getNav({ state }) {
     return state.nav;
   },
-  fetchNav({ commit }) {
-    return new Promise(async (resolve, reject) => {
-      let depId;
-      if (!state.info) {
-        commit('TAX_SET_USER_INFO_FROM_LOCAL')
-      }
-      depId = state.info.depId
-      getNav({ depId }).then((res) => {
-        try {
-          // const ttkrouter = generateRouter(res.body)
-          // resetRouter(router);
-          // router.addRoutes(ttkrouter)
-          commit('TAX_SET_NAV', ttkrouter)
-          resolve(ttkrouter);
-        } catch (error) {
-          console.error('获取路由后解析错误： ', new Error(error));
-          reject(error);
-        }
-      }).catch(error => {
-        reject(error)
-      })
-    })
+  async fetchNav({ commit }) {
+    const url = `/gateway/org/back/functionService/querySecFunctionNav?appId=${10001006}`
+    let depId
+    if(!state.info){
+      commit('TAX_SET_USER_INFO_FROM_LOCAL')
+    }
+    depId = state.info.depId
+    const res = await postAwait(url, {depId})
+    // commit('TAX_SET_NAV', ttkrouter)
+    return res
+    // return new Promise(async (resolve, reject) => {
+    //   let depId;
+    //   if (!state.info) {
+    //     commit('TAX_SET_USER_INFO_FROM_LOCAL')
+    //   }
+    //   depId = state.info.depId
+    //   getNav({ depId }).then((res) => {
+    //     try {
+    //       // const ttkrouter = generateRouter(res.body)
+    //       // resetRouter(router);
+    //       // router.addRoutes(ttkrouter)
+    //       commit('TAX_SET_NAV', ttkrouter)
+    //       resolve(ttkrouter);
+    //     } catch (error) {
+    //       console.error('获取路由后解析错误： ', new Error(error));
+    //       reject(error);
+    //     }
+    //   }).catch(error => {
+    //     reject(error)
+    //   })
+    // })
   }
 }
 
