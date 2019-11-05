@@ -80,6 +80,8 @@ const parseRouterItem = (item, pFunId, pParentId) => {
   if (!pParentId) {
     obj = parentMenu(item, 'top')
     if (item.subNodeFlag == 0) {
+      item.name += " " // 修复控制台输出 路由名称重复的问题
+      obj.meta = null, // 修复菜单搜索时，只有一级的菜单在搜索结果列表里显示成两级
       obj.children = generateRouter([item], item.functioinId, item.parentId)
     } else {
       obj.children = generateRouter(item.childSecFunctioinDTOs, item.functioinId, item.parentId)
@@ -95,38 +97,38 @@ const parseRouterItem = (item, pFunId, pParentId) => {
   return obj
 }
 
-// 根据接口返回的路由生成前端路由
-export const _g = (routerList) => {
-  const routers = [];
-  if (Array.isArray(routerList)) {
-    routerList.forEach((item, index) => {
-      routers.push(parseRouterItem(item));
-    });
-  } else {
-    routers.push(parseRouterItem(routerList));
-  }
-  return routers;
-}
-const _parseRouterItem = (item) => {
-  const app = SingletonApp.getInstance()
-  const isMenu = item.functionType === 'menu'
-  const hasChild = item.hasOwnProperty('childSecFunctioinDTOs')
-  const obj = {
-    path: item.url,
-    component: hasChild ? app.layout : _import(item.code),
-    name: item.name,
-    meta: {
-      title: item.name, icon: 'fsicon-tree-dot', affix: item.functionType === 'desk'
-    }
-  }
-  if (Array.isArray(item.childSecFunctioinDTOs)) {
-    obj.children = generateRouter(item.childSecFunctioinDTOs);
-  }
-  if (item.url === '#') {
-    obj.alwaysShow = true;
-  }
-  return obj
-}
+// // 根据接口返回的路由生成前端路由
+// export const _g = (routerList) => {
+//   const routers = [];
+//   if (Array.isArray(routerList)) {
+//     routerList.forEach((item, index) => {
+//       routers.push(parseRouterItem(item));
+//     });
+//   } else {
+//     routers.push(parseRouterItem(routerList));
+//   }
+//   return routers;
+// }
+// const _parseRouterItem = (item) => {
+//   const app = SingletonApp.getInstance()
+//   const isMenu = item.functionType === 'menu'
+//   const hasChild = item.hasOwnProperty('childSecFunctioinDTOs')
+//   const obj = {
+//     path: item.url,
+//     component: hasChild ? app.layout : _import(item.code),
+//     name: item.name,
+//     meta: {
+//       title: item.name, icon: 'fsicon-tree-dot', affix: item.functionType === 'desk'
+//     }
+//   }
+//   if (Array.isArray(item.childSecFunctioinDTOs)) {
+//     obj.children = generateRouter(item.childSecFunctioinDTOs);
+//   }
+//   if (item.url === '#') {
+//     obj.alwaysShow = true;
+//   }
+//   return obj
+// }
 
 const createRouter = () => new Router({
   // mode: 'history', // require service support
