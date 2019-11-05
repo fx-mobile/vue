@@ -1,5 +1,6 @@
 import { login, logout, getInfo, getNav } from '../../api/user'
 import { getToken, setToken, removeToken } from '../../utils/auth'
+import { getItem } from '../../utils/local-storage'
 import { generateRouter, resetRouter } from '../../router'
 import { router } from '../../application'
 import { postAwait } from '../../utils/request'
@@ -8,7 +9,7 @@ const state = {
   name: '',
   avatar: '',
   nav: [],
-  info: null
+  info: getItem('userInfo') ? getItem('userInfo') : null
 }
 
 const mutations = {
@@ -93,11 +94,11 @@ const actions = {
   async fetchNav({ commit }) {
     const url = `/gateway/org/back/functionService/querySecFunctionNav?appId=${10001006}`
     let depId
-    if(!state.info){
+    if (!state.info) {
       commit('TAX_SET_USER_INFO_FROM_LOCAL')
     }
     depId = state.info.depId
-    const res = await postAwait(url, {depId})
+    const res = await postAwait(url, { depId })
     // commit('TAX_SET_NAV', ttkrouter)
     return res
     // return new Promise(async (resolve, reject) => {
