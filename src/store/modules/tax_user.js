@@ -99,19 +99,23 @@ const actions = {
   },
   async fetchNav({ commit, state, dispatch }) {
     let routerList
-    if(state.nav.length>0){
+    if (state.nav.length > 0) {
       routerList = state.nav
-    }else{
+    } else {
       // const url = `/gateway/org/back/functionService/querySecFunctionNav?appId=${10001006}`
       const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav?appId=${10001006}`
-      const {depId} = state.info
-      const res = await postAwait(url, { depId })
-      const {body, head} = res
-      routerList = body
+      try{
+        const { depId } = state.info
+        const res = await postAwait(url, { depId })
+        const { body, head } = res
+        routerList = body
+      }catch(err){
+        return null
+      }
     }
     const _router = generateRouter(routerList) // 使用@ttk/vue格式化路由
     router.addRoutes(_router) // 使用vue-router动态添加路由
-    dispatch('tax_permission/appendRoutes', _router, {root: true}) // 添加到菜单列表、左侧菜单渲染就是根据这个来做渲染的。
+    dispatch('tax_permission/appendRoutes', _router, { root: true }) // 添加到菜单列表、左侧菜单渲染就是根据这个来做渲染的。
     commit('TAX_SET_NAV', routerList)
     return routerList
   }
