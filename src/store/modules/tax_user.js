@@ -1,15 +1,14 @@
 import { login, logout, getInfo, getNav } from '../../api/user'
 import { getToken, setToken, removeToken } from '../../utils/auth'
-import { getItem } from '../../utils/local-storage'
-import { generateRouter, resetRouter } from '../../router'
-import { router } from '../../application'
+import { getItem, removeItem, setItem } from '../../utils/local-storage'
+import router, { generateRouter, resetRouter } from '../../router'
 import { postAwait } from '../../utils/request'
 const state = {
   token: getToken(),
   name: '',
   avatar: '',
-  nav: [],
-  info: getItem('userInfo') ? getItem('userInfo') : null
+  nav: getItem('tax-nav-list') ? getItem('tax-nav-list') : [],
+  info: getItem('tax-user-info') ? getItem('tax-user-info') : null
 }
 
 const mutations = {
@@ -18,16 +17,21 @@ const mutations = {
   },
   TAX_SET_USER_INFO: (state, userInfo) => {
     state.info = userInfo
-    localStorage.setItem("userInfo", JSON.stringify(userInfo))
+    setItem("tax-user-info", userInfo)
     return state.info
   },
   TAX_SET_USER_INFO_FROM_LOCAL: (state) => {
-    const userInfo = JSON.parse(localStorage.getItem('userInfo'))
+    const userInfo = getItem('tax-user-info')
     return state.info = userInfo
   },
   TAX_SET_TOKEN: (state, token) => {
     state.token = token
     setToken(token)
+  },
+  TAX_LOGOUT: (state) => {
+    removeItem('tax-user-info')
+    removeItem('tax-nav-list')
+    setToken('')
   },
   TAX_SET_NAME: (state, name) => {
     state.name = name
@@ -37,48 +41,50 @@ const mutations = {
   },
   TAX_SET_NAV: (state, nav) => {
     state.nav = nav
+    setItem('tax-nav-list', nav)
   }
 }
 
 const actions = {
-  // user login
-  login({ commit }, userInfo) {
-    const { loginName, password, remember } = userInfo
-    return new Promise((resolve, reject) => {
-      login({ loginName: loginName.trim(), password, remember }).then(response => {
-        const { body: data } = response
-        commit('TAX_SET_TOKEN', data.token)
-        commit('TAX_SET_USER_INFO', data)
-        setToken(data.token)
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
-
-  // get user info
-  // getInfo({ commit, state }) {
+  // // user login
+  // login({ commit }, userInfo) {
+  //   const { loginName, password, remember } = userInfo
   //   return new Promise((resolve, reject) => {
-  //     getInfo(state.token).then(response => {
-  //       const { data } = response
-  //       if (!data) {
-  //         reject('Verification -- failed, please Login again.')
-  //       }
-  //       const { name, avatar } = data
-  //       commit('SET_NAME', name)
-  //       commit('SET_AVATAR', avatar)
-  //       resolve(data)
+  //     login({ loginName: loginName.trim(), password, remember }).then(response => {
+  //       const { body: data } = response
+  //       commit('TAX_SET_TOKEN', data.token)
+  //       commit('TAX_SET_USER_INFO', data)
+  //       setToken(data.token)
+  //       resolve()
   //     }).catch(error => {
   //       reject(error)
   //     })
   //   })
   // },
 
+  async login({ commit, dispatch }, userInfo) {
+    const { loginName, password, remember } = userInfo
+    const url = `/gateway/org/back/userService/loginExt?appId=10001006`
+    const loginRes = await postAwait(url, { loginName: loginName.trim(), password, remember })
+    const { body, head } = loginRes
+    if (head.errorCode !== "0") return loginRes
+    commit('TAX_SET_TOKEN', body.token)
+    commit('TAX_SET_USER_INFO', body)
+    setToken(body.token)
+    await dispatch('fetchNav')
+    return loginRes
+  },
+
   // user logout
-  logout({ commit, state }) {
-    return new Promise((resolve, reject) => {
-    })
+  async logout({ commit, state, dispatch }) {
+    const url = `/gateway/org/back/userService/logout?appId=10001006`
+    const token = getToken()
+    const res = await postAwait(url, { token })
+    commit('TAX_LOGOUT')
+    removeToken()
+    resetRouter()
+    dispatch('tax_tags_view/delAllViews', null, { root: true })
+    return res;
   },
 
   // remove token
@@ -91,37 +97,23 @@ const actions = {
   getNav({ state }) {
     return state.nav;
   },
-  async fetchNav({ commit }) {
-    const url = `/gateway/org/back/functionService/querySecFunctionNav?appId=${10001006}`
-    let depId
-    if (!state.info) {
-      commit('TAX_SET_USER_INFO_FROM_LOCAL')
+  async fetchNav({ commit, state, dispatch }) {
+    let routerList
+    if(state.nav.length>0){
+      routerList = state.nav
+    }else{
+      // const url = `/gateway/org/back/functionService/querySecFunctionNav?appId=${10001006}`
+      const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav?appId=${10001006}`
+      const {depId} = state.info
+      const res = await postAwait(url, { depId })
+      const {body, head} = res
+      routerList = body
     }
-    depId = state.info.depId
-    const res = await postAwait(url, { depId })
-    // commit('TAX_SET_NAV', ttkrouter)
-    return res
-    // return new Promise(async (resolve, reject) => {
-    //   let depId;
-    //   if (!state.info) {
-    //     commit('TAX_SET_USER_INFO_FROM_LOCAL')
-    //   }
-    //   depId = state.info.depId
-    //   getNav({ depId }).then((res) => {
-    //     try {
-    //       // const ttkrouter = generateRouter(res.body)
-    //       // resetRouter(router);
-    //       // router.addRoutes(ttkrouter)
-    //       commit('TAX_SET_NAV', ttkrouter)
-    //       resolve(ttkrouter);
-    //     } catch (error) {
-    //       console.error('获取路由后解析错误： ', new Error(error));
-    //       reject(error);
-    //     }
-    //   }).catch(error => {
-    //     reject(error)
-    //   })
-    // })
+    const _router = generateRouter(routerList) // 使用@ttk/vue格式化路由
+    router.addRoutes(_router) // 使用vue-router动态添加路由
+    dispatch('tax_permission/appendRoutes', _router, {root: true}) // 添加到菜单列表、左侧菜单渲染就是根据这个来做渲染的。
+    commit('TAX_SET_NAV', routerList)
+    return routerList
   }
 }
 
