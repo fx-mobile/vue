@@ -102,8 +102,8 @@ const actions = {
     if (state.nav.length > 0) {
       routerList = state.nav
     } else {
-      // const url = `/gateway/org/back/functionService/querySecFunctionNav?appId=${10001006}`
-      const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav?appId=${10001006}`
+      const url = `/gateway/org/back/functionService/querySecFunctionNav?appId=${10001006}`
+      // const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav?appId=${10001006}`
       try{
         const { depId } = state.info
         const res = await postAwait(url, { depId })
