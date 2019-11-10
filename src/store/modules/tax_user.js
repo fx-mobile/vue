@@ -1,4 +1,3 @@
-import { login, logout, getInfo, getNav } from '../../api/user'
 import { getToken, setToken, removeToken } from '../../utils/auth'
 import { getItem, removeItem, setItem } from '../../utils/local-storage'
 import router, { generateRouter, resetRouter } from '../../router'
@@ -46,21 +45,6 @@ const mutations = {
 }
 
 const actions = {
-  // // user login
-  // login({ commit }, userInfo) {
-  //   const { loginName, password, remember } = userInfo
-  //   return new Promise((resolve, reject) => {
-  //     login({ loginName: loginName.trim(), password, remember }).then(response => {
-  //       const { body: data } = response
-  //       commit('TAX_SET_TOKEN', data.token)
-  //       commit('TAX_SET_USER_INFO', data)
-  //       setToken(data.token)
-  //       resolve()
-  //     }).catch(error => {
-  //       reject(error)
-  //     })
-  //   })
-  // },
 
   async login({ commit, dispatch }, userInfo) {
     const { loginName, password, remember } = userInfo

@@ -1,23 +1,34 @@
 import Vue from 'vue'
-import Vuex from 'vuex'
 import router from './router'
-import Store from './store'
-import getters from './store/getters'
+import initStore from './store'
+// import getters from './store/getters'
 
-import TaxGroupUI from '@ttk/vue-ui'
-Vue.use(TaxGroupUI)
-Vue.use(Vuex)
+// import TaxGroupUI from '@ttk/vue-ui'
+// Vue.use(TaxGroupUI)
+
+const store = initStore()
 
 class SingletonApp {
   constructor() {
     this.vueApp = null
     this.router = null
+    this.layout = null
+    this.setting = null
+    this.pageMap = null
   }
   static getInstance() {
     if (!this.instance) {
       this.instance = new SingletonApp()
     }
     return this.instance
+  }
+  config({setting, layout, pageMap}){
+    this.setting = setting
+    this.layout = layout
+    this.pageMap = pageMap
+  }
+  getSeting(){
+    return this.setting
   }
   setLayout(component){
     this.layout = component
@@ -31,7 +42,7 @@ class SingletonApp {
         render: h => h('div', { attrs: { id: 'app' } }, [h('router-view')])
       })
     }else{
-      console.warn('Vue 已经实例化，请勿重复实例化。')
+      throw 'Vue 已经实例化，请勿重复实例化。'
     }
   }
 }
@@ -43,27 +54,26 @@ class SingletonApp {
  */
 const registerFun = (funName, fun) => {
   if (typeof funName !== 'string') {
-    console.error(`注入函数时第一个参数必须是 String 类型，当前为: ${funName}`)
+    throw `注入函数时第一个参数必须是 String 类型，当前为: ${funName}`
   }
   if (typeof fun !== 'function') {
-    console.error(`注入函数时第二个参数必须是 function 类型，当前为: ${fun}`)
+    throw `注入函数时第二个参数必须是 function 类型，当前为: ${fun}`
   }
   const instance = SingletonApp.getInstance()
   instance[funName] = fun
 }
 
-const _viewModules = Store.getViewModules()
-const _taxModues = Store.modules
-const store = new Vuex.Store({
-  modules: {
-    // ..._modules,
-    ..._viewModules,
-    ..._taxModues
-  },
-  getters
-})
+// const _viewModules = Store.getViewModules()
+// const _taxModues = Store.modules
+// const store = new Vuex.Store({
+//   modules: {
+//     ..._viewModules, // 这个store 是从项目中pages文件中扫描而来的
+//     ..._taxModues
+//   },
+//   getters
+// })
 
-const app = SingletonApp.getInstance()
+// const app = SingletonApp.getInstance()
 
 export {
   SingletonApp,
