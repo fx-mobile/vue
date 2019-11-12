@@ -163,7 +163,20 @@ function _nonIterableRest() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance");
 }
 
-Vue.use(Router);
+Vue.use(Router); // const _import = file => {
+//   let component
+//   if(process.env.NODE_ENV==="production"){
+//     component = import('@/pages' + file + '.vue')
+//   }else{
+//     try {
+//       component = require('@/pages' + file + '.vue').default
+//     }catch(err){
+//       component = {render: c=>c('div', `未找到该页面: /pages${file}.vue`)}
+//     }
+//   }
+//   return component
+// }
+
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -191,7 +204,6 @@ Vue.use(Router);
  * all roles can be accessed
  */
 
-
 var constantRoutes = [// 404 page must be placed at the end !!!
 {
   path: '*',
@@ -208,7 +220,6 @@ var constantRoutes = [// 404 page must be placed at the end !!!
 function parentMenu(item) {
   var menuType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'menu';
   var app = SingletonApp.getInstance();
-  console.log("page-".concat(item.code, ": "), app.pageMap[item.code]);
 
   var _component;
 
@@ -337,7 +348,7 @@ var concatRouter = function concatRouter(routers) {
 
 var state = {
   sidebar: {
-    opened: Cookies.get('sidebarStatus') ? !!+Cookies.get('sidebarStatus') : true,
+    opened: Cookies.get('tax-sidebar-status') ? !!+Cookies.get('tax-sidebar-status') : true,
     withoutAnimation: false
   },
   device: 'desktop'
@@ -348,13 +359,13 @@ var mutations = {
     state.sidebar.withoutAnimation = false;
 
     if (state.sidebar.opened) {
-      Cookies.set('sidebarStatus', 1);
+      Cookies.set('tax-sidebar-status', 1);
     } else {
-      Cookies.set('sidebarStatus', 0);
+      Cookies.set('tax-sidebar-status', 0);
     }
   },
   CLOSE_SIDEBAR: function CLOSE_SIDEBAR(state, withoutAnimation) {
-    Cookies.set('sidebarStatus', 0);
+    Cookies.set('tax-sidebar-status', 0);
     state.sidebar.opened = false;
     state.sidebar.withoutAnimation = withoutAnimation;
   },
@@ -737,7 +748,10 @@ function getToken() {
   return Cookies.get(TokenKey);
 }
 function setToken(token) {
-  return Cookies.set(TokenKey, token);
+  var expires = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 7;
+  return Cookies.set(TokenKey, token, {
+    expires: expires
+  });
 }
 function removeToken() {
   return Cookies.remove(TokenKey);
@@ -1190,12 +1204,18 @@ var service = axios.create({
   baseURL: '',
   //process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
+  // headers:{
+  //   'Content-Type':'application/json;charset=UTF-8'
+  // },
   timeout: 5000 // request timeout
 
 }); // request interceptor
 
 service.interceptors.request.use(function (config) {
   var requestId = uuid(32, 12);
+  var appId = Cookies.get('tax-app-id');
+  if (!appId) { alert('appId 为空，请检查程序是否正确初始化。'); }
+  config.url += "?appId=".concat(appId);
   config.url += "&requestId=".concat(requestId); // do something before request is sent
 
   if (store.getters.tax_token) {
@@ -1338,6 +1358,8 @@ var mutations$4 = {
   TAX_LOGOUT: function TAX_LOGOUT(state) {
     removeItem('tax-user-info');
     removeItem('tax-nav-list');
+    Cookies.remove('tax-sidebar-status');
+    Cookies.remove('tax-app-id');
     setToken('');
   },
   TAX_SET_NAME: function TAX_SET_NAME(state, name) {
@@ -1360,7 +1382,7 @@ var actions$4 = {
           case 0:
             commit = _ref.commit, dispatch = _ref.dispatch;
             loginName = userInfo.loginName, password = userInfo.password, remember = userInfo.remember;
-            url = "/gateway/org/back/userService/loginExt?appId=10001006";
+            url = "".concat(process.env.VUE_APP_JCHL_API, "/gateway/org/back/userService/loginExt");
             _context.next = 5;
             return regeneratorRuntime.awrap(postAwait(url, {
               loginName: loginName.trim(),
@@ -1404,7 +1426,7 @@ var actions$4 = {
         switch (_context2.prev = _context2.next) {
           case 0:
             commit = _ref2.commit, state = _ref2.state, dispatch = _ref2.dispatch;
-            url = "/gateway/org/back/userService/logout?appId=10001006";
+            url = "".concat(process.env.VUE_APP_JCHL_API, "/gateway/org/back/userService/logout");
             token = getToken();
             _context2.next = 5;
             return regeneratorRuntime.awrap(postAwait(url, {
@@ -1459,7 +1481,7 @@ var actions$4 = {
             break;
 
           case 5:
-            url = "/gateway/org/back/functionService/querySecFunctionNav?appId=".concat(10001006); // const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav?appId=${10001006}`
+            url = "".concat(process.env.VUE_APP_JCHL_API, "/gateway/org/back/functionService/querySecFunctionNav"); // const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav?appId=${10001006}`
 
             _context3.prev = 6;
             depId = state.info.depId;
@@ -1585,10 +1607,15 @@ function () {
     value: function config(_ref) {
       var setting = _ref.setting,
           layout = _ref.layout,
-          pageMap = _ref.pageMap;
+          pageMap = _ref.pageMap,
+          appId = _ref.appId;
       this.setting = setting;
       this.layout = layout;
       this.pageMap = pageMap;
+      this.appId = appId;
+      Cookies.set('tax-app-id', appId, {
+        expires: 7
+      }); // 设置appId到cookie，供ajax调用时使用
     }
   }, {
     key: "getSeting",
@@ -1651,7 +1678,7 @@ var registerFun = function registerFun(funName, fun) {
 
   var instance = SingletonApp.getInstance();
   instance[funName] = fun;
-}; // const _viewModules = Store.getViewModules()
+};
 
 function clipboardSuccess() {
   Vue.prototype.$message({

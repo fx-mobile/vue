@@ -4,19 +4,19 @@ import { SingletonApp } from '../application'
 // const _import = require('./_import_' + process.env.NODE_ENV) //获取组件的方法
 Vue.use(Router)
 
-const _import = file => {
-  let component
-  if(process.env.NODE_ENV==="production"){
-    component = import('@/pages' + file + '.vue')
-  }else{
-    try {
-      component = require('@/pages' + file + '.vue').default
-    }catch(err){
-      component = {render: c=>c('div', `未找到该页面: /pages${file}.vue`)}
-    }
-  }
-  return component
-}
+// const _import = file => {
+//   let component
+//   if(process.env.NODE_ENV==="production"){
+//     component = import('@/pages' + file + '.vue')
+//   }else{
+//     try {
+//       component = require('@/pages' + file + '.vue').default
+//     }catch(err){
+//       component = {render: c=>c('div', `未找到该页面: /pages${file}.vue`)}
+//     }
+//   }
+//   return component
+// }
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -57,7 +57,6 @@ export const constantRoutes = [
  */
 function parentMenu(item, menuType = 'menu') {
   const app = SingletonApp.getInstance()
-  console.log(`page-${item.code}: `, app.pageMap[item.code])
   let _component
   switch (menuType) {
     case "top":

@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import router from './router'
 import initStore from './store'
+import Cookies from 'js-cookie'
 // import getters from './store/getters'
 
 // import TaxGroupUI from '@ttk/vue-ui'
@@ -22,15 +23,17 @@ class SingletonApp {
     }
     return this.instance
   }
-  config({setting, layout, pageMap}){
+  config({ setting, layout, pageMap, appId }) {
     this.setting = setting
     this.layout = layout
     this.pageMap = pageMap
+    this.appId = appId
+    Cookies.set('tax-app-id', appId, { expires: 7 }) // 设置appId到cookie，供ajax调用时使用
   }
-  getSeting(){
+  getSeting() {
     return this.setting
   }
-  setLayout(component){
+  setLayout(component) {
     this.layout = component
   }
   start(_store) {
@@ -41,7 +44,7 @@ class SingletonApp {
         store,
         render: h => h('div', { attrs: { id: 'app' } }, [h('router-view')])
       })
-    }else{
+    } else {
       throw 'Vue 已经实例化，请勿重复实例化。'
     }
   }
@@ -62,18 +65,6 @@ const registerFun = (funName, fun) => {
   const instance = SingletonApp.getInstance()
   instance[funName] = fun
 }
-
-// const _viewModules = Store.getViewModules()
-// const _taxModues = Store.modules
-// const store = new Vuex.Store({
-//   modules: {
-//     ..._viewModules, // 这个store 是从项目中pages文件中扫描而来的
-//     ..._taxModues
-//   },
-//   getters
-// })
-
-// const app = SingletonApp.getInstance()
 
 export {
   SingletonApp,

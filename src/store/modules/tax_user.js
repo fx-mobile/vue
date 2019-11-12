@@ -2,6 +2,7 @@ import { getToken, setToken, removeToken } from '../../utils/auth'
 import { getItem, removeItem, setItem } from '../../utils/local-storage'
 import router, { generateRouter, resetRouter } from '../../router'
 import { postAwait } from '../../utils/request'
+import Cookies from 'js-cookie'
 const state = {
   token: getToken(),
   name: '',
@@ -30,6 +31,8 @@ const mutations = {
   TAX_LOGOUT: (state) => {
     removeItem('tax-user-info')
     removeItem('tax-nav-list')
+    Cookies.remove('tax-sidebar-status')
+    Cookies.remove('tax-app-id')
     setToken('')
   },
   TAX_SET_NAME: (state, name) => {
@@ -48,7 +51,7 @@ const actions = {
 
   async login({ commit, dispatch }, userInfo) {
     const { loginName, password, remember } = userInfo
-    const url = `/gateway/org/back/userService/loginExt?appId=10001006`
+    const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/userService/loginExt`
     const loginRes = await postAwait(url, { loginName: loginName.trim(), password, remember })
     const { body, head } = loginRes
     if (head.errorCode !== "0") return loginRes
@@ -61,7 +64,7 @@ const actions = {
 
   // user logout
   async logout({ commit, state, dispatch }) {
-    const url = `/gateway/org/back/userService/logout?appId=10001006`
+    const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/userService/logout`
     const token = getToken()
     const res = await postAwait(url, { token })
     commit('TAX_LOGOUT')
@@ -86,7 +89,7 @@ const actions = {
     if (state.nav.length > 0) {
       routerList = state.nav
     } else {
-      const url = `/gateway/org/back/functionService/querySecFunctionNav?appId=${10001006}`
+      const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/functionService/querySecFunctionNav`
       // const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav?appId=${10001006}`
       try{
         const { depId } = state.info

@@ -1,5 +1,5 @@
 import axios from 'axios'
-// import { MessageBox, Message } from '@ttk/vue-ui'
+import Cookies from 'js-cookie'
 import { store } from '../application'
 import { getToken } from './auth'
 import tools from './index'
@@ -9,6 +9,9 @@ const { uuid } = tools
 const service = axios.create({
   baseURL: '', //process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
+  // headers:{
+  //   'Content-Type':'application/json;charset=UTF-8'
+  // },
   timeout: 5000 // request timeout
 })
 
@@ -16,6 +19,13 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     const requestId = uuid(32, 12)
+    const appId = Cookies.get('tax-app-id')
+    if(!appId) alert('appId 为空，请检查程序是否正确初始化。')
+    if(/\?/.test(config.url)){
+      config.url += `&appId=${appId}`
+    }else{
+      config.url += `?appId=${appId}`
+    }
     config.url += `&requestId=${requestId}`
     // do something before request is sent
     if (store.getters.tax_token) {
@@ -102,8 +112,13 @@ export function get(url, data = {}) {
 export async function postAwait(url, data){
   return await service.post(url, data)
 }
-export async function getAwait(){
-  return await service.get(url, JSON.stringify(data))
+export async function getAwait(url, data){
+  let queryStr = JSON.stringify(data)
+  queryStr = queryStr.replace(/:/g, '=')
+  queryStr = queryStr.replace(/"/g, '')
+  queryStr = queryStr.replace(/,/, '&')
+  queryStr = queryStr.match(/\{([^)]*)\}/)
+  return await service.get(url+"?"+queryStr[1], JSON.stringify(data))
 }
 
 export default service
