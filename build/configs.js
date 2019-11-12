@@ -55,7 +55,7 @@ function genConfig(opts) {
   const config = {
     input: {
       input: resolve('src/index.js'),
-      external:['vue','vue-router', 'vuex', 'js-cookie', 'axios', 'clipboard', '@ttk/vue-ui'],
+      external:['vue','vue-router', 'vuex', 'js-cookie', 'axios', 'clipboard', '@ttk/vue-ui', 'element-ui'],
       plugins: [
         flow(),
         node(),

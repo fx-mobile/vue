@@ -1,6 +1,6 @@
 {
   "name": "@ttk/vue",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "ttk-vue，提供一个开箱即用的vue框架",
   "main": "dist/ttk-vue.common.js",
   "module": "dist/ttk-vue.esm.js",
@@ -52,6 +52,6 @@
     "webpack-dev-middleware": "^3.7.2"
   },
   "dependencies": {
-    "@ttk/vue-ui": "https://github.com/fx-mobile/vue-ui.git"
+    "element-ui": "^2.12.0"
   }
 }

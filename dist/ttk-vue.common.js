@@ -1,5 +1,5 @@
 /*!
-  * @ttk/vue v1.0.7.1
+  * @ttk/vue v1.0.9
   * (c) 2019 Evan You
   * @license MIT
   */
@@ -14,7 +14,7 @@ var Router = _interopDefault(require('vue-router'));
 var Vuex = _interopDefault(require('vuex'));
 var Cookies = _interopDefault(require('js-cookie'));
 var axios = _interopDefault(require('axios'));
-var TaxGroupUI = _interopDefault(require('@ttk/vue-ui'));
+var TaxGroupUI = _interopDefault(require('element-ui'));
 var Clipboard = _interopDefault(require('clipboard'));
 
 function _typeof(obj) {

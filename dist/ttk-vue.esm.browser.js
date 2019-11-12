@@ -1,5 +1,5 @@
 /*!
-  * @ttk/vue v1.0.7.1
+  * @ttk/vue v1.0.9
   * (c) 2019 Evan You
   * @license MIT
   */
@@ -8,7 +8,7 @@ import Router from 'vue-router';
 import Vuex from 'vuex';
 import Cookies from 'js-cookie';
 import axios from 'axios';
-import TaxGroupUI from '@ttk/vue-ui';
+import TaxGroupUI from 'element-ui';
 import Clipboard from 'clipboard';
 
 function _typeof(obj) {
