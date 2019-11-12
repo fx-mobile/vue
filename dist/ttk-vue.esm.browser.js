@@ -1,5 +1,5 @@
 /*!
-  * @ttk/vue v1.0.6
+  * @ttk/vue v1.0.7.1
   * (c) 2019 Evan You
   * @license MIT
   */

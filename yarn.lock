@@ -650,10 +650,9 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@ttk/vue-ui@^1.0.2":
-  version "1.0.2"
-  resolved "http://r.cnpmjs.org/@ttk/vue-ui/download/@ttk/vue-ui-1.0.2.tgz#2642138ba9a8d01bfc41bef887b2f268a1990c94"
-  integrity sha1-JkITi6mo0Bv8Qb74h7LyaKGZDJQ=
+"@ttk/vue-ui@https://github.com/fx-mobile/vue-ui.git":
+  version "1.0.4"
+  resolved "https://github.com/fx-mobile/vue-ui.git#52ae5b800dc41822f1f31fc0bf649c3f4d975f08"
   dependencies:
     async-validator "~1.8.1"
     babel-helper-vue-jsx-merge-props "^2.0.0"
