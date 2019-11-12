@@ -4,11 +4,11 @@
   * @license MIT
   */
 import Vue from 'vue';
-export { default as Vue } from 'vue';
 import Router from 'vue-router';
 import Vuex from 'vuex';
 import Cookies from 'js-cookie';
 import axios from 'axios';
+import TaxGroupUI from '@ttk/vue-ui';
 import Clipboard from 'clipboard';
 
 function _typeof(obj) {
@@ -1208,7 +1208,13 @@ service.interceptors.request.use(function (config) {
   var requestId = uuid(32, 12);
   var appId = Cookies.get('tax-app-id');
   if (!appId) alert('appId 为空，请检查程序是否正确初始化。');
-  config.url += "?appId=".concat(appId);
+
+  if (/\?/.test(config.url)) {
+    config.url += "&appId=".concat(appId);
+  } else {
+    config.url += "?appId=".concat(appId);
+  }
+
   config.url += "&requestId=".concat(requestId); // do something before request is sent
 
   if (store.getters.tax_token) {
@@ -1305,18 +1311,24 @@ function postAwait(url, data) {
     }
   });
 }
-function getAwait() {
+function getAwait(url, data) {
+  var queryStr;
   return regeneratorRuntime.async(function getAwait$(_context2) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
-          _context2.next = 2;
-          return regeneratorRuntime.awrap(service.get(url, JSON.stringify(data)));
+          queryStr = JSON.stringify(data);
+          queryStr = queryStr.replace(/:/g, '=');
+          queryStr = queryStr.replace(/"/g, '');
+          queryStr = queryStr.replace(/,/, '&');
+          queryStr = queryStr.match(/\{([^)]*)\}/);
+          _context2.next = 7;
+          return regeneratorRuntime.awrap(service.get(url + "?" + queryStr[1], JSON.stringify(data)));
 
-        case 2:
+        case 7:
           return _context2.abrupt("return", _context2.sent);
 
-        case 3:
+        case 8:
         case "end":
           return _context2.stop();
       }
@@ -1577,9 +1589,7 @@ var initStore = function initStore() {
   return store;
 };
 
-// import TaxGroupUI from '@ttk/vue-ui'
-// Vue.use(TaxGroupUI)
-
+Vue.use(TaxGroupUI);
 var store = initStore();
 
 var SingletonApp =

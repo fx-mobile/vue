@@ -4,8 +4,8 @@ import initStore from './store'
 import Cookies from 'js-cookie'
 // import getters from './store/getters'
 
-// import TaxGroupUI from '@ttk/vue-ui'
-// Vue.use(TaxGroupUI)
+import TaxGroupUI from '@ttk/vue-ui'
+Vue.use(TaxGroupUI)
 
 const store = initStore()
 
