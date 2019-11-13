@@ -1,6 +1,6 @@
 {
   "name": "@ttk/vue",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "ttk-vue，提供一个开箱即用的vue框架",
   "main": "dist/ttk-vue.common.js",
   "module": "dist/ttk-vue.esm.js",
@@ -49,9 +49,9 @@
     "webpack-dev-middleware": "^3.7.2"
   },
   "dependencies": {
-    "vuex": "^3.1.1",
-    "vue-router": "^3.1.3",
+    "@ttk/vue-ui": "https://github.com/fx-mobile/vue-ui.git",
     "vue": "^2.6.10",
-    "element-ui": "^2.12.0"
+    "vue-router": "^3.1.3",
+    "vuex": "^3.1.1"
   }
 }
