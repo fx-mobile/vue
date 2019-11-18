@@ -1,6 +1,6 @@
 /*!
   * @ttk/vue v1.0.12
-  * (c) 2019 Evan You
+  * (c) 2019 laogong5i0
   * @license MIT
   */
 'use strict';
@@ -179,34 +179,25 @@ Vue.use(Router); // const _import = file => {
 // }
 
 /**
- * Note: sub-menu only appear when route children.length >= 1
- * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
+ * Note: 子菜单只在 children.length >= 1 时显示
  *
- * hidden: true                   if set true, item will not show in the sidebar(default is false)
- * alwaysShow: true               if set true, will always show the root menu
- *                                if not set alwaysShow, when item has more than one children route,
- *                                it will becomes nested mode, otherwise not show the root menu
- * redirect: noRedirect           if set noRedirect will no redirect in the breadcrumb
- * name:'router-name'             the name is used by <keep-alive> (must set!!!)
+ * hidden: true                   是否在菜单中显示， 默认为false
+ * alwaysShow: true               当你1个路由下面的 children 声明的路由大于1个时，自动会变成嵌套的模式--如组件页面
+ *                                只有1个时，会将那个子路由当做根路由显示在侧边栏--如引导页面
+ *                                若你想不管路由下面的 children 声明的个数都显示你的根路由，你可以设置 alwaysShow: true，这样它就会忽略之前定义的规则，一直显示根路由
+ * redirect: noRedirect           当设置 noRedirect 的时候该路由在面包屑导航中不可被点击
+ * name:'router-name'             设定路由的名字，一定要填写不然使用<keep-alive>时会出现各种问题
  * meta : {
-    roles: ['admin','editor']    control the page roles (you can set multiple roles)
-    title: 'title'               the name show in sidebar and breadcrumb (recommend set)
-    icon: 'icon-name'             the icon show in the sidebar
-    breadcrumb: false            if set false, the item will hidden in breadcrumb(default is true) false: 不在面包屑中显示
-    activeMenu: '/example/list'  if set path, the sidebar will highlight the path you set 不在指定菜单中显示
+    title: 'title'               设置该路由在侧边栏和面包屑中展示的名字
+    icon: 'icon-name'            设置该路由的图标
+    breadcrumb: false            如果设置为false，则不会在breadcrumb面包屑中显示
+    activeMenu: '/example/list'  if set path, the sidebar will highlight the path you set
     affix: true                  标签不可关闭
-    noCache: true
+    noCache: true                如果设置为true，则不会被 <keep-alive> 缓存(默认 false)
   }
  */
 
-/**
- * constantRoutes
- * a base page that does not have permission requirements
- * all roles can be accessed
- */
-
-var constantRoutes = [// 404 page must be placed at the end !!!
-{
+var constantRoutes = [{
   path: '*',
   redirect: '/404',
   hidden: true
@@ -269,6 +260,7 @@ var generateRouter = function generateRouter(routerList) {
 
 var parseRouterItem = function parseRouterItem(item, pFunId, pParentId) {
   var obj;
+  var childs;
 
   if (!pParentId) {
     obj = parentMenu(item, 'top');
@@ -276,10 +268,18 @@ var parseRouterItem = function parseRouterItem(item, pFunId, pParentId) {
     if (item.subNodeFlag == 0) {
       item.name += " "; // 修复控制台输出 路由名称重复的问题
 
-      obj.meta = null, // 修复菜单搜索时，只有一级的菜单在搜索结果列表里显示成两级
-      obj.children = generateRouter([item], item.functioinId, item.parentId);
+      obj.meta = null; // 修复菜单搜索时，只有一级的菜单在搜索结果列表里显示成两级
+
+      childs = [item];
+      obj.children = generateRouter(childs, item.functioinId, item.parentId);
     } else {
-      obj.children = generateRouter(item.childSecFunctioinDTOs, item.functioinId, item.parentId);
+      childs = item.childSecFunctioinDTOs;
+      obj.children = generateRouter(childs, item.functioinId, item.parentId);
+    } // 如果顶层路由是'/'，说明是首页，是首页是添加redirect属性
+
+
+    if (/^[\/]{1}$/.test(item.url)) {
+      obj.redirect = childs[0].url;
     }
   } else {
     if (item.subNodeFlag == 0) {
@@ -291,39 +291,7 @@ var parseRouterItem = function parseRouterItem(item, pFunId, pParentId) {
   }
 
   return obj;
-}; // // 根据接口返回的路由生成前端路由
-// export const _g = (routerList) => {
-//   const routers = [];
-//   if (Array.isArray(routerList)) {
-//     routerList.forEach((item, index) => {
-//       routers.push(parseRouterItem(item));
-//     });
-//   } else {
-//     routers.push(parseRouterItem(routerList));
-//   }
-//   return routers;
-// }
-// const _parseRouterItem = (item) => {
-//   const app = SingletonApp.getInstance()
-//   const isMenu = item.functionType === 'menu'
-//   const hasChild = item.hasOwnProperty('childSecFunctioinDTOs')
-//   const obj = {
-//     path: item.url,
-//     component: hasChild ? app.layout : _import(item.code),
-//     name: item.name,
-//     meta: {
-//       title: item.name, icon: 'fsicon-tree-dot', affix: item.functionType === 'desk'
-//     }
-//   }
-//   if (Array.isArray(item.childSecFunctioinDTOs)) {
-//     obj.children = generateRouter(item.childSecFunctioinDTOs);
-//   }
-//   if (item.url === '#') {
-//     obj.alwaysShow = true;
-//   }
-//   return obj
-// }
-
+};
 
 var createRouter = function createRouter() {
   return new Router({
@@ -1494,8 +1462,8 @@ var actions$4 = {
             break;
 
           case 5:
-            url = "".concat(process.env.VUE_APP_JCHL_API, "/gateway/org/back/functionService/querySecFunctionNav"); // const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav?appId=${10001006}`
-
+            // const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/functionService/querySecFunctionNav`
+            url = "".concat(process.env.VUE_APP_BASE_API, "/back/functionService/querySecFunctionNav");
             _context3.prev = 6;
             depId = state.info.depId;
             _context3.next = 10;
@@ -1524,7 +1492,8 @@ var actions$4 = {
               root: true
             }); // 添加到菜单列表、左侧菜单渲染就是根据这个来做渲染的。
 
-            commit('TAX_SET_NAV', routerList);
+            commit('TAX_SET_NAV', routerList); // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
+
             return _context3.abrupt("return", routerList);
 
           case 23:

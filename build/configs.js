@@ -11,7 +11,7 @@ const version = process.env.VERSION || require('../package.json').version
 const banner =
   `/*!
   * @ttk/vue v${version}
-  * (c) ${new Date().getFullYear()} Evan You
+  * (c) ${new Date().getFullYear()} laogong5i0
   * @license MIT
   */`
 

@@ -89,8 +89,8 @@ const actions = {
     if (state.nav.length > 0) {
       routerList = state.nav
     } else {
-      const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/functionService/querySecFunctionNav`
-      // const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav?appId=${10001006}`
+      // const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/functionService/querySecFunctionNav`
+      const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav`
       try{
         const { depId } = state.info
         const res = await postAwait(url, { depId })
@@ -103,7 +103,7 @@ const actions = {
     const _router = generateRouter(routerList) // 使用@ttk/vue格式化路由
     router.addRoutes(_router) // 使用vue-router动态添加路由
     dispatch('tax_permission/appendRoutes', _router, { root: true }) // 添加到菜单列表、左侧菜单渲染就是根据这个来做渲染的。
-    commit('TAX_SET_NAV', routerList)
+    commit('TAX_SET_NAV', routerList) // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
     return routerList
   }
 }
