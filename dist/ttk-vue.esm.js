@@ -1,5 +1,5 @@
 /*!
-  * @ttk/vue v1.0.13
+  * @ttk/vue v1.0.14
   * (c) 2019 laogong5i0
   * @license MIT
   */
@@ -1456,8 +1456,8 @@ var actions$4 = {
             break;
 
           case 5:
-            url = "".concat(process.env.VUE_APP_JCHL_API, "/gateway/org/back/functionService/querySecFunctionNav"); // const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav`
-
+            // const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/functionService/querySecFunctionNav`
+            url = "".concat(process.env.VUE_APP_BASE_API, "/back/functionService/querySecFunctionNav");
             _context3.prev = 6;
             depId = state.info.depId;
             _context3.next = 10;
@@ -1800,4 +1800,4 @@ function isArray(arg) {
   return Array.isArray(arg);
 }
 
-export { SingletonApp, initStore as TaxModules, concatRouter, constantRoutes, generateRouter, get, getAwait, getItem, getToken, handleClipboard, isArray, isExternal, isString, openWindow, post, postAwait, registerFun, removeToken, resetRouter, router, service, setItem, setToken, store, tools as utils, validAlphabets, validEmail, validLowerCase, validPhone, validURL, validUpperCase, validUsername };
+export { SingletonApp, initStore as TaxModules, concatRouter, constantRoutes, generateRouter, get, getAwait, getItem, getToken, handleClipboard, isArray, isExternal, isString, openWindow, post, postAwait, registerFun, removeItem, removeToken, resetRouter, router, service, setItem, setToken, store, tools as utils, validAlphabets, validEmail, validLowerCase, validPhone, validURL, validUpperCase, validUsername };

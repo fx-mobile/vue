@@ -7,7 +7,7 @@ export { constantRoutes, resetRouter, concatRouter, generateRouter } from './rou
 export { default as utils } from './utils'
 export { getToken, setToken, removeToken } from './utils/auth'
 export { default as handleClipboard } from './utils/clipboard'
-export { setItem, getItem } from './utils/local-storage'
+export { setItem, getItem, removeItem } from './utils/local-storage'
 export { default as openWindow } from './utils/open-window'
 export { default as service } from './utils/request'
 export { post, get, postAwait, getAwait } from './utils/request'

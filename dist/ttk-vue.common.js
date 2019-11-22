@@ -1,5 +1,5 @@
 /*!
-  * @ttk/vue v1.0.13
+  * @ttk/vue v1.0.14
   * (c) 2019 laogong5i0
   * @license MIT
   */
@@ -1462,8 +1462,8 @@ var actions$4 = {
             break;
 
           case 5:
-            url = "".concat(process.env.VUE_APP_JCHL_API, "/gateway/org/back/functionService/querySecFunctionNav"); // const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav`
-
+            // const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/functionService/querySecFunctionNav`
+            url = "".concat(process.env.VUE_APP_BASE_API, "/back/functionService/querySecFunctionNav");
             _context3.prev = 6;
             depId = state.info.depId;
             _context3.next = 10;
@@ -1823,6 +1823,7 @@ exports.openWindow = openWindow;
 exports.post = post;
 exports.postAwait = postAwait;
 exports.registerFun = registerFun;
+exports.removeItem = removeItem;
 exports.removeToken = removeToken;
 exports.resetRouter = resetRouter;
 exports.router = router;
