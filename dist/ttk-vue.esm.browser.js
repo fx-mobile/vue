@@ -1,5 +1,5 @@
 /*!
-  * @ttk/vue v1.0.14
+  * @ttk/vue v1.0.16
   * (c) 2019 laogong5i0
   * @license MIT
   */
@@ -1391,14 +1391,24 @@ var actions$4 = {
       }
     });
   },
+  clearLoginInfo: function clearLoginInfo(_ref2) {
+    var commit = _ref2.commit,
+        dispatch = _ref2.dispatch;
+    commit('TAX_LOGOUT');
+    removeToken();
+    resetRouter();
+    dispatch('tax_tags_view/delAllViews', null, {
+      root: true
+    });
+  },
   // user logout
-  logout: function logout(_ref2) {
+  logout: function logout(_ref3) {
     var commit, state, dispatch, url, token, res;
     return regeneratorRuntime.async(function logout$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            commit = _ref2.commit, state = _ref2.state, dispatch = _ref2.dispatch;
+            commit = _ref3.commit, state = _ref3.state, dispatch = _ref3.dispatch;
             url = "".concat(process.env.VUE_APP_JCHL_API, "/gateway/org/back/userService/logout");
             token = getToken();
             _context2.next = 5;
@@ -1408,15 +1418,10 @@ var actions$4 = {
 
           case 5:
             res = _context2.sent;
-            commit('TAX_LOGOUT');
-            removeToken();
-            resetRouter();
-            dispatch('tax_tags_view/delAllViews', null, {
-              root: true
-            });
+            dispatch('tax_user/clearLoginInfo', null);
             return _context2.abrupt("return", res);
 
-          case 11:
+          case 8:
           case "end":
             return _context2.stop();
         }
@@ -1424,25 +1429,28 @@ var actions$4 = {
     });
   },
   // remove token
-  resetToken: function resetToken(_ref3) {
-    var commit = _ref3.commit;
+  resetToken: function resetToken(_ref4) {
+    var commit = _ref4.commit,
+        dispatch = _ref4.dispatch;
     return new Promise(function (resolve) {
-      commit('TAX_SET_TOKEN', '');
+      dispatch('tax_user/clearLoginInfo', null, {
+        root: true
+      });
       resolve();
     });
   },
-  getNav: function getNav(_ref4) {
-    var state = _ref4.state;
+  getNav: function getNav(_ref5) {
+    var state = _ref5.state;
     return state.nav;
   },
-  fetchNav: function fetchNav(_ref5) {
+  fetchNav: function fetchNav(_ref6) {
     var commit, state, dispatch, routerList, url, depId, res, body, head, _router;
 
     return regeneratorRuntime.async(function fetchNav$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            commit = _ref5.commit, state = _ref5.state, dispatch = _ref5.dispatch;
+            commit = _ref6.commit, state = _ref6.state, dispatch = _ref6.dispatch;
 
             if (!(state.nav.length > 0)) {
               _context3.next = 5;

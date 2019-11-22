@@ -61,23 +61,25 @@ const actions = {
     await dispatch('fetchNav')
     return loginRes
   },
-
+  clearLoginInfo({commit, dispatch}) {
+    commit('TAX_LOGOUT')
+    removeToken()
+    resetRouter()
+    dispatch('tax_tags_view/delAllViews', null, { root: true })
+  },
   // user logout
   async logout({ commit, state, dispatch }) {
     const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/userService/logout`
     const token = getToken()
     const res = await postAwait(url, { token })
-    commit('TAX_LOGOUT')
-    removeToken()
-    resetRouter()
-    dispatch('tax_tags_view/delAllViews', null, { root: true })
+    dispatch('tax_user/clearLoginInfo', null)
     return res;
   },
 
   // remove token
-  resetToken({ commit }) {
+  resetToken({ commit,dispatch }) {
     return new Promise(resolve => {
-      commit('TAX_SET_TOKEN', '')
+      dispatch('tax_user/clearLoginInfo', null,{ root: true })
       resolve();
     })
   },
@@ -91,12 +93,12 @@ const actions = {
     } else {
       // const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/functionService/querySecFunctionNav`
       const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav`
-      try{
+      try {
         const { depId } = state.info
         const res = await postAwait(url, { depId })
         const { body, head } = res
         routerList = body
-      }catch(err){
+      } catch (err) {
         return null
       }
     }
