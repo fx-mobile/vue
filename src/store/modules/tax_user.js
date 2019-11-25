@@ -91,8 +91,8 @@ const actions = {
     if (state.nav.length > 0) {
       routerList = state.nav
     } else {
-      // const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/functionService/querySecFunctionNav`
-      const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav`
+      const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/functionService/querySecFunctionNav`
+      // const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav`
       try {
         const { depId } = state.info
         const res = await postAwait(url, { depId })

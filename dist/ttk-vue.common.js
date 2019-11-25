@@ -1470,8 +1470,8 @@ var actions$4 = {
             break;
 
           case 5:
-            // const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/functionService/querySecFunctionNav`
-            url = "".concat(process.env.VUE_APP_BASE_API, "/back/functionService/querySecFunctionNav");
+            url = "".concat(process.env.VUE_APP_JCHL_API, "/gateway/org/back/functionService/querySecFunctionNav"); // const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav`
+
             _context3.prev = 6;
             depId = state.info.depId;
             _context3.next = 10;
