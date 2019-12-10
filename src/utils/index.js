@@ -388,16 +388,5 @@ export default {
     }
     const sortArr = arr.sort(sortFun(key))
     return sortArr
-  },
-
-  // 内页打开新标签
-  openNewTag(options) {
-    const defaultOptions = {
-      title: "新标签",
-      url: "",
-      type: "new-tag"
-    }
-    options = Object.assign(defaultOptions, options)
-    window.top.postMessage(options)
   }
 }

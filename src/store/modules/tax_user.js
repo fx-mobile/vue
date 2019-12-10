@@ -49,17 +49,22 @@ const mutations = {
 
 const actions = {
 
-  async login({ commit, dispatch }, userInfo) {
-    const { loginName, password, remember } = userInfo
-    const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/userService/loginExt`
-    const loginRes = await postAwait(url, { loginName: loginName.trim(), password, remember })
-    const { body, head } = loginRes
-    if (head.errorCode !== "0") return loginRes
-    commit('TAX_SET_TOKEN', body.token)
-    commit('TAX_SET_USER_INFO', body)
-    setToken(body.token)
-    await dispatch('fetchNav')
-    return loginRes
+  // async login({ commit, dispatch }, userInfo) {
+  //   const { loginName, password, remember } = userInfo
+  //   const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/userService/loginExt`
+  //   const loginRes = await postAwait(url, { loginName: loginName.trim(), password, remember })
+  //   const { body, head } = loginRes
+  //   if (head.errorCode !== "0") return loginRes
+  //   commit('TAX_SET_TOKEN', body.token)
+  //   commit('TAX_SET_USER_INFO', body)
+  //   setToken(body.token)
+  //   await dispatch('fetchNav')
+  //   return loginRes
+  // },
+  async login({ commit, dispatch }, data) {
+    commit('TAX_SET_TOKEN', data.token)
+    commit('TAX_SET_USER_INFO', data)
+    setToken(data.token)
   },
   clearLoginInfo({commit, dispatch}) {
     commit('TAX_LOGOUT')
@@ -86,27 +91,31 @@ const actions = {
   getNav({ state }) {
     return state.nav;
   },
-  async fetchNav({ commit, state, dispatch }) {
-    let routerList
-    if (state.nav.length > 0) {
-      routerList = state.nav
-    } else {
-      const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/functionService/querySecFunctionNav`
-      // const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav`
-      try {
-        const { depId } = state.info
-        const res = await postAwait(url, { depId })
-        const { body, head } = res
-        routerList = body
-      } catch (err) {
-        return null
-      }
-    }
-    const _router = generateRouter(routerList) // 使用@ttk/vue格式化路由
-    router.addRoutes(_router) // 使用vue-router动态添加路由
-    dispatch('tax_permission/appendRoutes', _router, { root: true }) // 添加到菜单列表、左侧菜单渲染就是根据这个来做渲染的。
-    commit('TAX_SET_NAV', routerList) // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
-    return routerList
+  // async fetchNav({ commit, state, dispatch }) {
+  //   let routerList
+  //   if (state.nav.length > 0) {
+  //     routerList = state.nav
+  //   } else {
+  //     const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/functionService/querySecFunctionNav`
+  //     // const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav`
+  //     try {
+  //       const { depId } = state.info
+  //       const res = await postAwait(url, { depId })
+  //       const { body, head } = res
+  //       routerList = body
+  //     } catch (err) {
+  //       return null
+  //     }
+  //   }
+  //   const _router = generateRouter(routerList) // 使用@ttk/vue格式化路由
+  //   router.addRoutes(_router) // 使用vue-router动态添加路由
+  //   dispatch('tax_permission/appendRoutes', _router, { root: true }) // 添加到菜单列表、左侧菜单渲染就是根据这个来做渲染的。
+  //   commit('TAX_SET_NAV', routerList) // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
+  //   return routerList
+  // },
+  async fetchNav({ commit, state, dispatch }, data) {
+    dispatch('tax_permission/appendRoutes', data.router, { root: true }) // 添加到菜单列表、左侧菜单渲染就是根据这个来做渲染的。
+    commit('TAX_SET_NAV', data.routerList) // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
   }
 }
 
