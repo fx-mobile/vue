@@ -3,14 +3,21 @@ import Cookies from 'js-cookie'
 const state = {
   sidebar: {
     opened: Cookies.get('tax-sidebar-status') ? !!+Cookies.get('tax-sidebar-status') : true,
+    splitPaneStatus: Cookies.get('tax-sidebar-splitPaneStatus') ? Cookies.get('tax-sidebar-splitPaneStatus') : null,
     withoutAnimation: false
   },
   device: 'desktop'
 }
 
 const mutations = {
-  TOGGLE_SIDEBAR: (state, isOpened) => {
-    state.sidebar.opened = isOpened ? isOpened : !state.sidebar.opened
+  TOGGLE_SIDEBAR: (state, { isOpened, splitPaneStatus }) => {
+    if (isOpened !== undefined) {
+      state.sidebar.opened = isOpened ? !!isOpened : !state.sidebar.opened
+    }
+    if (splitPaneStatus !== undefined) {
+      state.sidebar.splitPaneStatus = splitPaneStatus
+      Cookies.set('tax-sidebar-splitPaneStatus', splitPaneStatus)
+    }
     state.sidebar.withoutAnimation = false
     if (state.sidebar.opened) {
       Cookies.set('tax-sidebar-status', 1)
@@ -29,7 +36,7 @@ const mutations = {
 }
 
 const actions = {
-  toggleSideBar({ commit }, data = null) {
+  toggleSideBar({ commit }, data = {}) {
     commit('TOGGLE_SIDEBAR', data)
   },
   closeSideBar({ commit }, { withoutAnimation }) {

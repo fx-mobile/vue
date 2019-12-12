@@ -33,6 +33,7 @@ const mutations = {
     removeItem('tax-nav-list')
     Cookies.remove('tax-sidebar-status')
     Cookies.remove('tax-app-id')
+    Cookies.remove('tax-sidebar-splitPaneStatus')
     setToken('')
   },
   TAX_SET_NAME: (state, name) => {

@@ -1,5 +1,5 @@
 /*!
-  * @ttk/vue v1.0.16
+  * @ttk/vue v1.0.17
   * (c) 2019 laogong5i0
   * @license MIT
   */
@@ -318,13 +318,25 @@ var concatRouter = function concatRouter(routers) {
 var state = {
   sidebar: {
     opened: Cookies.get('tax-sidebar-status') ? !!+Cookies.get('tax-sidebar-status') : true,
+    splitPaneStatus: Cookies.get('tax-sidebar-splitPaneStatus') ? Cookies.get('tax-sidebar-splitPaneStatus') : null,
     withoutAnimation: false
   },
   device: 'desktop'
 };
 var mutations = {
-  TOGGLE_SIDEBAR: function TOGGLE_SIDEBAR(state, isOpened) {
-    state.sidebar.opened = isOpened ? isOpened : !state.sidebar.opened;
+  TOGGLE_SIDEBAR: function TOGGLE_SIDEBAR(state, _ref) {
+    var isOpened = _ref.isOpened,
+        splitPaneStatus = _ref.splitPaneStatus;
+
+    if (isOpened !== undefined) {
+      state.sidebar.opened = isOpened ? !!isOpened : !state.sidebar.opened;
+    }
+
+    if (splitPaneStatus !== undefined) {
+      state.sidebar.splitPaneStatus = splitPaneStatus;
+      Cookies.set('tax-sidebar-splitPaneStatus', splitPaneStatus);
+    }
+
     state.sidebar.withoutAnimation = false;
 
     if (state.sidebar.opened) {
@@ -343,18 +355,18 @@ var mutations = {
   }
 };
 var actions = {
-  toggleSideBar: function toggleSideBar(_ref) {
-    var commit = _ref.commit;
-    var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+  toggleSideBar: function toggleSideBar(_ref2) {
+    var commit = _ref2.commit;
+    var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     commit('TOGGLE_SIDEBAR', data);
   },
-  closeSideBar: function closeSideBar(_ref2, _ref3) {
-    var commit = _ref2.commit;
-    var withoutAnimation = _ref3.withoutAnimation;
+  closeSideBar: function closeSideBar(_ref3, _ref4) {
+    var commit = _ref3.commit;
+    var withoutAnimation = _ref4.withoutAnimation;
     commit('CLOSE_SIDEBAR', withoutAnimation);
   },
-  toggleDevice: function toggleDevice(_ref4, device) {
-    var commit = _ref4.commit;
+  toggleDevice: function toggleDevice(_ref5, device) {
+    var commit = _ref5.commit;
     commit('TOGGLE_DEVICE', device);
   }
 };
@@ -1341,6 +1353,7 @@ var mutations$4 = {
     removeItem('tax-nav-list');
     Cookies.remove('tax-sidebar-status');
     Cookies.remove('tax-app-id');
+    Cookies.remove('tax-sidebar-splitPaneStatus');
     setToken('');
   },
   TAX_SET_NAME: function TAX_SET_NAME(state, name) {
@@ -1355,44 +1368,30 @@ var mutations$4 = {
   }
 };
 var actions$4 = {
-  login: function login(_ref, userInfo) {
-    var commit, dispatch, loginName, password, remember, url, loginRes, body, head;
+  // async login({ commit, dispatch }, userInfo) {
+  //   const { loginName, password, remember } = userInfo
+  //   const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/userService/loginExt`
+  //   const loginRes = await postAwait(url, { loginName: loginName.trim(), password, remember })
+  //   const { body, head } = loginRes
+  //   if (head.errorCode !== "0") return loginRes
+  //   commit('TAX_SET_TOKEN', body.token)
+  //   commit('TAX_SET_USER_INFO', body)
+  //   setToken(body.token)
+  //   await dispatch('fetchNav')
+  //   return loginRes
+  // },
+  login: function login(_ref, data) {
+    var commit, dispatch;
     return regeneratorRuntime.async(function login$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             commit = _ref.commit, dispatch = _ref.dispatch;
-            loginName = userInfo.loginName, password = userInfo.password, remember = userInfo.remember;
-            url = "".concat(process.env.VUE_APP_JCHL_API, "/gateway/org/back/userService/loginExt");
-            _context.next = 5;
-            return regeneratorRuntime.awrap(postAwait(url, {
-              loginName: loginName.trim(),
-              password: password,
-              remember: remember
-            }));
+            commit('TAX_SET_TOKEN', data.token);
+            commit('TAX_SET_USER_INFO', data);
+            setToken(data.token);
 
-          case 5:
-            loginRes = _context.sent;
-            body = loginRes.body, head = loginRes.head;
-
-            if (!(head.errorCode !== "0")) {
-              _context.next = 9;
-              break;
-            }
-
-            return _context.abrupt("return", loginRes);
-
-          case 9:
-            commit('TAX_SET_TOKEN', body.token);
-            commit('TAX_SET_USER_INFO', body);
-            setToken(body.token);
-            _context.next = 14;
-            return regeneratorRuntime.awrap(dispatch('fetchNav'));
-
-          case 14:
-            return _context.abrupt("return", loginRes);
-
-          case 15:
+          case 4:
           case "end":
             return _context.stop();
         }
@@ -1451,65 +1450,47 @@ var actions$4 = {
     var state = _ref5.state;
     return state.nav;
   },
-  fetchNav: function fetchNav(_ref6) {
-    var commit, state, dispatch, routerList, url, depId, res, body, head, _router;
-
+  // async fetchNav({ commit, state, dispatch }) {
+  //   let routerList
+  //   if (state.nav.length > 0) {
+  //     routerList = state.nav
+  //   } else {
+  //     const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/functionService/querySecFunctionNav`
+  //     // const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav`
+  //     try {
+  //       const { depId } = state.info
+  //       const res = await postAwait(url, { depId })
+  //       const { body, head } = res
+  //       routerList = body
+  //     } catch (err) {
+  //       return null
+  //     }
+  //   }
+  //   const _router = generateRouter(routerList) // 使用@ttk/vue格式化路由
+  //   router.addRoutes(_router) // 使用vue-router动态添加路由
+  //   dispatch('tax_permission/appendRoutes', _router, { root: true }) // 添加到菜单列表、左侧菜单渲染就是根据这个来做渲染的。
+  //   commit('TAX_SET_NAV', routerList) // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
+  //   return routerList
+  // },
+  fetchNav: function fetchNav(_ref6, data) {
+    var commit, state, dispatch;
     return regeneratorRuntime.async(function fetchNav$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
             commit = _ref6.commit, state = _ref6.state, dispatch = _ref6.dispatch;
-
-            if (!(state.nav.length > 0)) {
-              _context3.next = 5;
-              break;
-            }
-
-            routerList = state.nav;
-            _context3.next = 18;
-            break;
-
-          case 5:
-            url = "".concat(process.env.VUE_APP_JCHL_API, "/gateway/org/back/functionService/querySecFunctionNav"); // const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav`
-
-            _context3.prev = 6;
-            depId = state.info.depId;
-            _context3.next = 10;
-            return regeneratorRuntime.awrap(postAwait(url, {
-              depId: depId
-            }));
-
-          case 10:
-            res = _context3.sent;
-            body = res.body, head = res.head;
-            routerList = body;
-            _context3.next = 18;
-            break;
-
-          case 15:
-            _context3.prev = 15;
-            _context3.t0 = _context3["catch"](6);
-            return _context3.abrupt("return", null);
-
-          case 18:
-            _router = generateRouter(routerList); // 使用@ttk/vue格式化路由
-
-            router.addRoutes(_router); // 使用vue-router动态添加路由
-
-            dispatch('tax_permission/appendRoutes', _router, {
+            dispatch('tax_permission/appendRoutes', data.router, {
               root: true
             }); // 添加到菜单列表、左侧菜单渲染就是根据这个来做渲染的。
 
-            commit('TAX_SET_NAV', routerList); // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
+            commit('TAX_SET_NAV', data.routerList); // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
 
-            return _context3.abrupt("return", routerList);
-
-          case 23:
+          case 3:
           case "end":
             return _context3.stop();
         }
       }
-    }, null, null, [[6, 15]]);
+    });
   }
 };
 var tax_user = {
