@@ -461,7 +461,7 @@ var tax_settings = {
 var state$3 = {
   visitedViews: [],
   cachedViews: []
-};
+};eee
 var mutations$3 = {
   ADD_VISITED_VIEW: function ADD_VISITED_VIEW(state, view) {
     if (state.visitedViews.some(function (v) {
