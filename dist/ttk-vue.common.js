@@ -201,97 +201,7 @@ var constantRoutes = [{
   path: '*',
   redirect: '/404',
   hidden: true
-}]; // 渲染含有子级的菜单
-
-/**
- * parentMenu
- * 渲染含有子级的菜单
- * menuType: top 顶级菜单， menu: 含有子级的普通菜单，page: 菜单中最一级需要指定具体页面
- */
-
-function parentMenu(item) {
-  var menuType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'menu';
-  var app = SingletonApp.getInstance();
-
-  var _component;
-
-  switch (menuType) {
-    case "top":
-      _component = app.layout;
-      break;
-
-    case "page":
-      _component = {
-        render: function render(c) {
-          return c("router-view");
-        }
-      };
-
-    default:
-      _component = app.pageMap[item.code];
-    //_import(item.code)
-  }
-
-  return {
-    path: item.url,
-    component: _component,
-    name: item.name,
-    meta: {
-      title: item.name,
-      icon: item.imageUrl,
-      affix: item.functionType === 'desk'
-    }
-  };
-}
-
-var generateRouter = function generateRouter(routerList) {
-  var pFunId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-  var pParentId = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-  var routers = [];
-
-  if (Array.isArray(routerList)) {
-    routerList.forEach(function (item, index) {
-      routers.push(parseRouterItem(item, pFunId, pParentId));
-    });
-  }
-
-  return routers;
-};
-
-var parseRouterItem = function parseRouterItem(item, pFunId, pParentId) {
-  var obj;
-  var childs;
-
-  if (!pParentId) {
-    obj = parentMenu(item, 'top');
-
-    if (item.subNodeFlag == 0) {
-      item.name += " "; // 修复控制台输出 路由名称重复的问题
-
-      obj.meta = null; // 修复菜单搜索时，只有一级的菜单在搜索结果列表里显示成两级
-
-      childs = [item];
-      obj.children = generateRouter(childs, item.functioinId, item.parentId);
-    } else {
-      childs = item.childSecFunctioinDTOs;
-      obj.children = generateRouter(childs, item.functioinId, item.parentId);
-    } // 如果顶层路由是'/'，说明是首页，是首页是添加redirect属性
-
-
-    if (/^[\/]{1}$/.test(item.url)) {
-      obj.redirect = childs[0].url;
-    }
-  } else {
-    if (item.subNodeFlag == 0) {
-      obj = parentMenu(item, 'page');
-    } else {
-      obj = parentMenu(item);
-      obj.children = generateRouter(item.childSecFunctioinDTOs, item.functioinId, item.parentId);
-    }
-  }
-
-  return obj;
-};
+}];
 
 var createRouter = function createRouter() {
   return new Router({
@@ -461,7 +371,7 @@ var tax_settings = {
 var state$3 = {
   visitedViews: [],
   cachedViews: []
-};eee
+};
 var mutations$3 = {
   ADD_VISITED_VIEW: function ADD_VISITED_VIEW(state, view) {
     if (state.visitedViews.some(function (v) {
@@ -1799,7 +1709,6 @@ exports.SingletonApp = SingletonApp;
 exports.TaxModules = initStore;
 exports.concatRouter = concatRouter;
 exports.constantRoutes = constantRoutes;
-exports.generateRouter = generateRouter;
 exports.get = get;
 exports.getAwait = getAwait;
 exports.getItem = getItem;

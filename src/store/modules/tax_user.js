@@ -1,6 +1,6 @@
 import { getToken, setToken, removeToken } from '../../utils/auth'
 import { getItem, removeItem, setItem } from '../../utils/local-storage'
-import router, { generateRouter, resetRouter } from '../../router'
+import router, { resetRouter } from '../../router'
 import { postAwait } from '../../utils/request'
 import Cookies from 'js-cookie'
 const state = {
