@@ -1218,7 +1218,7 @@ function getAwait(url, data) {
           queryStr = JSON.stringify(data);
           queryStr = queryStr.replace(/:/g, '=');
           queryStr = queryStr.replace(/"/g, '');
-          queryStr = queryStr.replace(/,/, '&');
+          queryStr = queryStr.replace(/,/g, '&');
           queryStr = queryStr.match(/\{([^)]*)\}/);
           _context2.next = 7;
           return regeneratorRuntime.awrap(service.get(url + "?" + queryStr[1], JSON.stringify(data)));
@@ -1464,6 +1464,61 @@ var initStore = function initStore() {
   });
   return store;
 };
+
+var EventBus =
+/*#__PURE__*/
+function () {
+  function EventBus() {
+    _classCallCheck(this, EventBus);
+
+    this._events = {};
+  }
+
+  _createClass(EventBus, [{
+    key: "on",
+    value: function on(type, callback) {
+      if (!this._events.hasOwnProperty(type)) {
+        this._events[type] = [callback];
+      } else {
+        this._events[type].push(callback);
+      }
+    }
+  }, {
+    key: "emit",
+    value: function emit(type, param) {
+      var _this = this;
+
+      if (this._events.hasOwnProperty(type)) {
+        this._events[type].forEach(function (item) {
+          item.apply(_this, [param]);
+        });
+      }
+    }
+  }, {
+    key: "off",
+    value: function off(type, callback) {
+      if (_typeof(this._events[type]) === "object" && Object.prototype.toString.apply(this._events[type]) === "[object Array]") {
+        for (var i = this._events[type].length - 1; i >= 0; i--) {
+          if (this._events[type][i] === callback) {
+            this._events[type].splice(i, 1);
+          }
+        }
+      }
+    }
+  }]);
+
+  return EventBus;
+}();
+
+var eventBus = new EventBus();
+var eventBusPlugin = function eventBusPlugin(V) {
+  return Object.defineProperty(V.prototype, '$eBus', {
+    value: eventBus,
+    writable: true
+  });
+};
+
+Vue.use(eventBusPlugin); //使用封装的event-bus.js
 
 Vue.use(TaxGroupUI);
 var store = initStore();

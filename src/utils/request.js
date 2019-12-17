@@ -116,7 +116,7 @@ export async function getAwait(url, data){
   let queryStr = JSON.stringify(data)
   queryStr = queryStr.replace(/:/g, '=')
   queryStr = queryStr.replace(/"/g, '')
-  queryStr = queryStr.replace(/,/, '&')
+  queryStr = queryStr.replace(/,/g, '&')
   queryStr = queryStr.match(/\{([^)]*)\}/)
   return await service.get(url+"?"+queryStr[1], JSON.stringify(data))
 }
