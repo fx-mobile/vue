@@ -219,10 +219,28 @@ var concatRouter = function concatRouter(routers) {
   constantRoutes.unshift.apply(constantRoutes, _toConsumableArray(routers));
 };
 
+function setItem(key, data) {
+  window.localStorage.setItem(key, JSON.stringify(data));
+}
+function getItem(key) {
+  var value;
+
+  try {
+    value = JSON.parse(window.localStorage.getItem(key));
+  } catch (err) {
+    value = null;
+  }
+
+  return value;
+}
+function removeItem(key) {
+  window.localStorage.removeItem(key);
+}
+
 var state = {
   sidebar: {
-    opened: Cookies.get('tax-sidebar-status') ? !!+Cookies.get('tax-sidebar-status') : true,
-    splitPaneStatus: Cookies.get('tax-sidebar-splitPaneStatus') ? Cookies.get('tax-sidebar-splitPaneStatus') : null,
+    opened: Cookies.get('tax-sidebar-status') + "" ? !!+Cookies.get('tax-sidebar-status') : true,
+    splitPaneStatus: getItem('tax-sidebar-splitPaneStatus') ? getItem('tax-sidebar-splitPaneStatus') : null,
     withoutAnimation: false
   },
   device: 'desktop'
@@ -233,12 +251,12 @@ var mutations = {
         splitPaneStatus = _ref.splitPaneStatus;
 
     if (isOpened !== undefined) {
-      state.sidebar.opened = isOpened ? !!isOpened : !state.sidebar.opened;
+      state.sidebar.opened = isOpened ? !!+isOpened : false;
     }
 
     if (splitPaneStatus !== undefined) {
       state.sidebar.splitPaneStatus = splitPaneStatus;
-      Cookies.set('tax-sidebar-splitPaneStatus', splitPaneStatus);
+      setItem("tax-sidebar-splitPaneStatus", splitPaneStatus);
     }
 
     state.sidebar.withoutAnimation = false;
@@ -640,24 +658,6 @@ function setToken(token) {
 }
 function removeToken() {
   return Cookies.remove(TokenKey);
-}
-
-function setItem(key, data) {
-  window.localStorage.setItem(key, JSON.stringify(data));
-}
-function getItem(key) {
-  var value;
-
-  try {
-    value = JSON.parse(window.localStorage.getItem(key));
-  } catch (err) {
-    value = null;
-  }
-
-  return value;
-}
-function removeItem(key) {
-  window.localStorage.removeItem(key);
 }
 
 var tools = {
@@ -1233,6 +1233,7 @@ var state$4 = {
   name: '',
   avatar: '',
   nav: getItem('tax-nav-list') ? getItem('tax-nav-list') : [],
+  asyncRoutes: getItem('tax-async-list') ? getItem('tax-async-list') : [],
   info: getItem('tax-user-info') ? getItem('tax-user-info') : null
 };
 var mutations$4 = {
@@ -1255,9 +1256,10 @@ var mutations$4 = {
   TAX_LOGOUT: function TAX_LOGOUT(state) {
     removeItem('tax-user-info');
     removeItem('tax-nav-list');
+    removeItem('tax-async-list');
     Cookies.remove('tax-sidebar-status');
     Cookies.remove('tax-app-id');
-    Cookies.remove('tax-sidebar-splitPaneStatus');
+    removeItem('tax-sidebar-splitPaneStatus');
     setToken('');
   },
   TAX_SET_NAME: function TAX_SET_NAME(state, name) {
@@ -1269,6 +1271,14 @@ var mutations$4 = {
   TAX_SET_NAV: function TAX_SET_NAV(state, nav) {
     state.nav = nav;
     setItem('tax-nav-list', nav);
+  },
+  TAX_SET_ASYNC_ROUTE: function TAX_SET_ASYNC_ROUTE(state, routes) {
+    state.asyncRoutes.push(routes);
+    setItem('tax-async-list', state.asyncRoutes);
+  },
+  TAX_REMOVE_ASYNC_ROUTE: function TAX_REMOVE_ASYNC_ROUTE(state) {
+    state.asyncRoutes = [];
+    removeItem('tax-async-list');
   }
 };
 var actions$4 = {
@@ -1392,6 +1402,38 @@ var actions$4 = {
           case 3:
           case "end":
             return _context3.stop();
+        }
+      }
+    });
+  },
+  setAsyncRoute: function setAsyncRoute(_ref7, data) {
+    var commit, state, dispatch;
+    return regeneratorRuntime.async(function setAsyncRoute$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            commit = _ref7.commit, state = _ref7.state, dispatch = _ref7.dispatch;
+            commit('TAX_SET_ASYNC_ROUTE', data.routerList); // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
+
+          case 2:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    });
+  },
+  removeAsyncRoute: function removeAsyncRoute(_ref8, data) {
+    var commit, state, dispatch;
+    return regeneratorRuntime.async(function removeAsyncRoute$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            commit = _ref8.commit, state = _ref8.state, dispatch = _ref8.dispatch;
+            commit('TAX_REMOVE_ASYNC_ROUTE'); // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
+
+          case 2:
+          case "end":
+            return _context5.stop();
         }
       }
     });

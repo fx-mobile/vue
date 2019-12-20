@@ -8,6 +8,7 @@ const state = {
   name: '',
   avatar: '',
   nav: getItem('tax-nav-list') ? getItem('tax-nav-list') : [],
+  asyncRoutes: getItem('tax-async-list') ? getItem('tax-async-list') : [],
   info: getItem('tax-user-info') ? getItem('tax-user-info') : null
 }
 
@@ -31,9 +32,10 @@ const mutations = {
   TAX_LOGOUT: (state) => {
     removeItem('tax-user-info')
     removeItem('tax-nav-list')
+    removeItem('tax-async-list')
     Cookies.remove('tax-sidebar-status')
     Cookies.remove('tax-app-id')
-    Cookies.remove('tax-sidebar-splitPaneStatus')
+    removeItem('tax-sidebar-splitPaneStatus')
     setToken('')
   },
   TAX_SET_NAME: (state, name) => {
@@ -45,6 +47,14 @@ const mutations = {
   TAX_SET_NAV: (state, nav) => {
     state.nav = nav
     setItem('tax-nav-list', nav)
+  },
+  TAX_SET_ASYNC_ROUTE: (state, routes) => {
+    state.asyncRoutes.push(routes)
+    setItem('tax-async-list', state.asyncRoutes)
+  },
+  TAX_REMOVE_ASYNC_ROUTE: (state) => {
+    state.asyncRoutes = []
+    removeItem('tax-async-list')
   }
 }
 
@@ -117,7 +127,14 @@ const actions = {
   async fetchNav({ commit, state, dispatch }, data) {
     dispatch('tax_permission/appendRoutes', data.router, { root: true }) // 添加到菜单列表、左侧菜单渲染就是根据这个来做渲染的。
     commit('TAX_SET_NAV', data.routerList) // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
+  },
+  async setAsyncRoute({ commit, state, dispatch }, data) {
+    commit('TAX_SET_ASYNC_ROUTE', data.routerList) // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
+  },
+  async removeAsyncRoute({ commit, state, dispatch }, data) {
+    commit('TAX_REMOVE_ASYNC_ROUTE') // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
   }
+  
 }
 
 export default {

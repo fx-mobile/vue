@@ -1,9 +1,10 @@
-import Cookies from 'js-cookie'
+import Cookies from 'js-cookie';
+import { getItem, removeItem, setItem } from '../../utils/local-storage';
 
 const state = {
   sidebar: {
-    opened: Cookies.get('tax-sidebar-status') ? !!+Cookies.get('tax-sidebar-status') : true,
-    splitPaneStatus: Cookies.get('tax-sidebar-splitPaneStatus') ? Cookies.get('tax-sidebar-splitPaneStatus') : null,
+    opened: (Cookies.get('tax-sidebar-status') + "") ? !!+Cookies.get('tax-sidebar-status') : true,
+    splitPaneStatus: getItem('tax-sidebar-splitPaneStatus') ? getItem('tax-sidebar-splitPaneStatus') : null,
     withoutAnimation: false
   },
   device: 'desktop'
@@ -12,11 +13,11 @@ const state = {
 const mutations = {
   TOGGLE_SIDEBAR: (state, { isOpened, splitPaneStatus }) => {
     if (isOpened !== undefined) {
-      state.sidebar.opened = isOpened ? !!isOpened : !state.sidebar.opened
+      state.sidebar.opened = isOpened ? !!+isOpened : false;
     }
     if (splitPaneStatus !== undefined) {
       state.sidebar.splitPaneStatus = splitPaneStatus
-      Cookies.set('tax-sidebar-splitPaneStatus', splitPaneStatus)
+      setItem("tax-sidebar-splitPaneStatus", splitPaneStatus)
     }
     state.sidebar.withoutAnimation = false
     if (state.sidebar.opened) {
