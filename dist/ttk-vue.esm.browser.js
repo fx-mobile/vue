@@ -306,7 +306,10 @@ var state$1 = {
 var mutations$1 = {
   SET_ROUTES: function SET_ROUTES(state, routes) {
     state.addRoutes = routes;
-    state.routes = constantRoutes.concat(routes);
+    state.routes = constantRoutes.concat(routes); // setItem('tax-permission-routes', state.routes) // 持久化存储
+  },
+  UPDATE_ROUTES: function UPDATE_ROUTES(state, routes) {
+    state.routes = routes; // setItem('tax-permission-routes', state.routes) // 持久化存储
   }
 };
 var actions$1 = {
@@ -314,6 +317,14 @@ var actions$1 = {
     var commit = _ref.commit;
     return new Promise(function (resolve) {
       commit('SET_ROUTES', routes);
+      resolve();
+    });
+  },
+  updateRoutes: function updateRoutes(_ref2, _ref3) {
+    var commit = _ref2.commit;
+    var routes = _ref3.routes;
+    return new Promise(function (resolve) {
+      commit('UPDATE_ROUTES', routes);
       resolve();
     });
   },
@@ -1391,13 +1402,10 @@ var actions$4 = {
         switch (_context3.prev = _context3.next) {
           case 0:
             commit = _ref6.commit, state = _ref6.state, dispatch = _ref6.dispatch;
-            dispatch('tax_permission/appendRoutes', data.router, {
-              root: true
-            }); // 添加到菜单列表、左侧菜单渲染就是根据这个来做渲染的。
-
+            // dispatch('tax_permission/appendRoutes', data.router, { root: true }) // 添加到菜单列表、左侧菜单渲染就是根据这个来做渲染的。
             commit('TAX_SET_NAV', data.routerList); // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
 
-          case 3:
+          case 2:
           case "end":
             return _context3.stop();
         }

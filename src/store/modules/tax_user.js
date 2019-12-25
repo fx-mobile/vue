@@ -55,7 +55,8 @@ const mutations = {
   TAX_REMOVE_ASYNC_ROUTE: (state) => {
     state.asyncRoutes = []
     removeItem('tax-async-list')
-  }
+  },
+
 }
 
 const actions = {
@@ -125,7 +126,7 @@ const actions = {
   //   return routerList
   // },
   async fetchNav({ commit, state, dispatch }, data) {
-    dispatch('tax_permission/appendRoutes', data.router, { root: true }) // 添加到菜单列表、左侧菜单渲染就是根据这个来做渲染的。
+    // dispatch('tax_permission/appendRoutes', data.router, { root: true }) // 添加到菜单列表、左侧菜单渲染就是根据这个来做渲染的。
     commit('TAX_SET_NAV', data.routerList) // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
   },
   async setAsyncRoute({ commit, state, dispatch }, data) {
@@ -134,7 +135,6 @@ const actions = {
   async removeAsyncRoute({ commit, state, dispatch }, data) {
     commit('TAX_REMOVE_ASYNC_ROUTE') // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
   }
-  
 }
 
 export default {
