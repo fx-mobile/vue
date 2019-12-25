@@ -1,5 +1,5 @@
 /*!
-  * @ttk/vue v1.0.16
+  * @ttk/vue v1.0.18
   * (c) 2019 laogong5i0
   * @license MIT
   */
@@ -481,8 +481,8 @@ var mutations$3 = {
       _iteratorError = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-          _iterator["return"]();
+        if (!_iteratorNormalCompletion && _iterator.return != null) {
+          _iterator.return();
         }
       } finally {
         if (_didIteratorError) {
@@ -511,8 +511,8 @@ var mutations$3 = {
       _iteratorError2 = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
-          _iterator2["return"]();
+        if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+          _iterator2.return();
         }
       } finally {
         if (_didIteratorError2) {
@@ -546,8 +546,8 @@ var mutations$3 = {
       _iteratorError3 = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-          _iterator3["return"]();
+        if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
+          _iterator3.return();
         }
       } finally {
         if (_didIteratorError3) {
@@ -585,8 +585,8 @@ var mutations$3 = {
       _iteratorError4 = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
-          _iterator4["return"]();
+        if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
+          _iterator4.return();
         }
       } finally {
         if (_didIteratorError4) {
@@ -1170,7 +1170,7 @@ var service = axios.create({
   // headers:{
   //   'Content-Type':'application/json;charset=UTF-8'
   // },
-  timeout: 5000 // request timeout
+  timeout: 60000 // request timeout default 60s
 
 }); // request interceptor
 
@@ -1249,32 +1249,37 @@ service.interceptors.request.use(function (config) {
 
 function post(url) {
   var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  return service({
+  var config = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  return service(_objectSpread2({
     url: url,
     method: 'post',
     data: _objectSpread2({}, data)
-  });
+  }, config));
 }
 function get(url) {
   var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  return service({
+  var config = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  return service(_objectSpread2({
     url: url,
     method: 'get',
     data: _objectSpread2({}, data)
-  });
+  }, config));
 }
 function postAwait(url, data) {
+  var config,
+      _args = arguments;
   return regeneratorRuntime.async(function postAwait$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          _context.next = 2;
-          return regeneratorRuntime.awrap(service.post(url, data));
-
-        case 2:
-          return _context.abrupt("return", _context.sent);
+          config = _args.length > 2 && _args[2] !== undefined ? _args[2] : {};
+          _context.next = 3;
+          return regeneratorRuntime.awrap(service.post(url, data, config));
 
         case 3:
+          return _context.abrupt("return", _context.sent);
+
+        case 4:
         case "end":
           return _context.stop();
       }
@@ -1282,23 +1287,26 @@ function postAwait(url, data) {
   });
 }
 function getAwait(url, data) {
-  var queryStr;
+  var config,
+      queryStr,
+      _args2 = arguments;
   return regeneratorRuntime.async(function getAwait$(_context2) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
+          config = _args2.length > 2 && _args2[2] !== undefined ? _args2[2] : {};
           queryStr = JSON.stringify(data);
           queryStr = queryStr.replace(/:/g, '=');
           queryStr = queryStr.replace(/"/g, '');
           queryStr = queryStr.replace(/,/, '&');
           queryStr = queryStr.match(/\{([^)]*)\}/);
-          _context2.next = 7;
-          return regeneratorRuntime.awrap(service.get(url + "?" + queryStr[1], JSON.stringify(data)));
-
-        case 7:
-          return _context2.abrupt("return", _context2.sent);
+          _context2.next = 8;
+          return regeneratorRuntime.awrap(service.get(url + "?" + queryStr[1], JSON.stringify(data), config));
 
         case 8:
+          return _context2.abrupt("return", _context2.sent);
+
+        case 9:
         case "end":
           return _context2.stop();
       }
@@ -1544,7 +1552,7 @@ var getViewModules = function getViewModules() {
   var modules = modulesFiles.keys().reduce(function (modules, modulePath) {
     var moduleName = modulePath.replace(/^\.\/(.*)\/(.*)\.store\.\w+$/, '$2');
     var value = modulesFiles(modulePath);
-    modules[moduleName] = value["default"];
+    modules[moduleName] = value.default;
     return modules;
   }, {});
   return modules;

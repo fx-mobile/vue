@@ -12,7 +12,7 @@ const service = axios.create({
   // headers:{
   //   'Content-Type':'application/json;charset=UTF-8'
   // },
-  timeout: 5000 // request timeout
+  timeout: 60000 // request timeout default 60s
 })
 
 // request interceptor
@@ -93,32 +93,34 @@ service.interceptors.request.use(
 //   }
 // )
 
-export function post(url, data = {}) {
+export function post(url, data = {}, config = {}) {
   return service({
     url,
     method: 'post',
-    data: { ...data }
+    data: { ...data },
+    ...config
   })
 }
 
-export function get(url, data = {}) {
+export function get(url, data = {}, config = {}) {
   return service({
     url,
     method: 'get',
-    data: { ...data }
+    data: { ...data },
+    ...config
   })
 }
 
-export async function postAwait(url, data){
-  return await service.post(url, data)
+export async function postAwait(url, data, config = {}){
+  return await service.post(url, data, config)
 }
-export async function getAwait(url, data){
+export async function getAwait(url, data, config = {}){
   let queryStr = JSON.stringify(data)
   queryStr = queryStr.replace(/:/g, '=')
   queryStr = queryStr.replace(/"/g, '')
   queryStr = queryStr.replace(/,/, '&')
   queryStr = queryStr.match(/\{([^)]*)\}/)
-  return await service.get(url+"?"+queryStr[1], JSON.stringify(data))
+  return await service.get(url+"?"+queryStr[1], JSON.stringify(data), config)
 }
 
 export default service
