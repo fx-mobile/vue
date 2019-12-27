@@ -115,12 +115,20 @@ export async function postAwait(url, data, config = {}){
   return await service.post(url, data, config)
 }
 export async function getAwait(url, data, config = {}){
-  let queryStr = JSON.stringify(data)
-  queryStr = queryStr.replace(/:/g, '=')
-  queryStr = queryStr.replace(/"/g, '')
-  queryStr = queryStr.replace(/,/, '&')
-  queryStr = queryStr.match(/\{([^)]*)\}/)
-  return await service.get(url+"?"+queryStr[1], JSON.stringify(data), config)
+  // let queryStr = JSON.stringify(data)
+  // queryStr = queryStr.replace(/:/g, '=')
+  // queryStr = queryStr.replace(/"/g, '')
+  // queryStr = queryStr.replace(/,/, '&')
+  // queryStr = queryStr.match(/\{([^)]*)\}/)
+  let dataStr = ""; // 数据拼接字符串
+  Object.keys(data).forEach(key => {
+    if (typeof data[key] == "string") {
+      data[key] = data[key].trim();
+    }
+    dataStr += key + "=" + data[key] + "&";
+  });
+  dataStr = dataStr.substr(0, dataStr.lastIndexOf("&"));
+  return await service.get(url+"?"+dataStr, JSON.stringify(data), config)
 }
 
 export default service

@@ -1,5 +1,5 @@
 /*!
-  * @ttk/vue v1.0.18
+  * @ttk/vue v1.0.19
   * (c) 2019 laogong5i0
   * @license MIT
   */
@@ -1294,25 +1294,35 @@ function postAwait(url, data) {
 }
 function getAwait(url, data) {
   var config,
-      queryStr,
+      dataStr,
       _args2 = arguments;
   return regeneratorRuntime.async(function getAwait$(_context2) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
           config = _args2.length > 2 && _args2[2] !== undefined ? _args2[2] : {};
-          queryStr = JSON.stringify(data);
-          queryStr = queryStr.replace(/:/g, '=');
-          queryStr = queryStr.replace(/"/g, '');
-          queryStr = queryStr.replace(/,/, '&');
-          queryStr = queryStr.match(/\{([^)]*)\}/);
-          _context2.next = 8;
-          return regeneratorRuntime.awrap(service.get(url + "?" + queryStr[1], JSON.stringify(data), config));
+          // let queryStr = JSON.stringify(data)
+          // queryStr = queryStr.replace(/:/g, '=')
+          // queryStr = queryStr.replace(/"/g, '')
+          // queryStr = queryStr.replace(/,/, '&')
+          // queryStr = queryStr.match(/\{([^)]*)\}/)
+          dataStr = ""; // 数据拼接字符串
 
-        case 8:
+          Object.keys(data).forEach(function (key) {
+            if (typeof data[key] == "string") {
+              data[key] = data[key].trim();
+            }
+
+            dataStr += key + "=" + data[key] + "&";
+          });
+          dataStr = dataStr.substr(0, dataStr.lastIndexOf("&"));
+          _context2.next = 6;
+          return regeneratorRuntime.awrap(service.get(url + "?" + dataStr, JSON.stringify(data), config));
+
+        case 6:
           return _context2.abrupt("return", _context2.sent);
 
-        case 9:
+        case 7:
         case "end":
           return _context2.stop();
       }
