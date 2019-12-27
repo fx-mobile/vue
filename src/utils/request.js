@@ -111,10 +111,10 @@ export function get(url, data = {}, config = {}) {
   })
 }
 
-export async function postAwait(url, data, config = {}){
+export async function postAwait(url, data = {}, config = {}){
   return await service.post(url, data, config)
 }
-export async function getAwait(url, data, config = {}){
+export async function getAwait(url, data = {}, config = {}){
   // let queryStr = JSON.stringify(data)
   // queryStr = queryStr.replace(/:/g, '=')
   // queryStr = queryStr.replace(/"/g, '')

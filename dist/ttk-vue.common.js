@@ -1271,35 +1271,39 @@ function get(url) {
     data: _objectSpread2({}, data)
   }, config));
 }
-function postAwait(url, data) {
-  var config,
+function postAwait(url) {
+  var data,
+      config,
       _args = arguments;
   return regeneratorRuntime.async(function postAwait$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
+          data = _args.length > 1 && _args[1] !== undefined ? _args[1] : {};
           config = _args.length > 2 && _args[2] !== undefined ? _args[2] : {};
-          _context.next = 3;
+          _context.next = 4;
           return regeneratorRuntime.awrap(service.post(url, data, config));
 
-        case 3:
+        case 4:
           return _context.abrupt("return", _context.sent);
 
-        case 4:
+        case 5:
         case "end":
           return _context.stop();
       }
     }
   });
 }
-function getAwait(url, data) {
-  var config,
+function getAwait(url) {
+  var data,
+      config,
       dataStr,
       _args2 = arguments;
   return regeneratorRuntime.async(function getAwait$(_context2) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
+          data = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : {};
           config = _args2.length > 2 && _args2[2] !== undefined ? _args2[2] : {};
           // let queryStr = JSON.stringify(data)
           // queryStr = queryStr.replace(/:/g, '=')
@@ -1316,13 +1320,13 @@ function getAwait(url, data) {
             dataStr += key + "=" + data[key] + "&";
           });
           dataStr = dataStr.substr(0, dataStr.lastIndexOf("&"));
-          _context2.next = 6;
+          _context2.next = 7;
           return regeneratorRuntime.awrap(service.get(url + "?" + dataStr, JSON.stringify(data), config));
 
-        case 6:
+        case 7:
           return _context2.abrupt("return", _context2.sent);
 
-        case 7:
+        case 8:
         case "end":
           return _context2.stop();
       }
