@@ -79,7 +79,6 @@ npm run dev
 ```
 
  启动完成后会自动打开浏览器访问 [http://localhost:9528](http://localhost:9528/)， 你看到下面的页面就代表操作成功了 
-
 <img src=".\images\star\1571126999776.png" alt="1571126999776" style="zoom:80%;" />
 
 
@@ -99,11 +98,10 @@ npm run dev
 │   │── favicon.ico            # favicon图标
 │   └── index.html             # html模板
 ├── src                        # 源代码
-│   ├── api                    # 所有请求
 │   ├── assets                 # 静态资源
 │   ├── components             # 全局公用组件
-│   ├── router                 # 路由
-│   ├── store                  # 全局 store管理
+│   │   ├── lvbu              # 框架布局组件目录
+│   ├── lib        # 框架提供的能力，包含不止于	iframe内嵌页打开新tag，动态配置路由等
 │   ├── pages                  # views 所有页面
 │   │   ├── page1              # 页面1
 │   │   │   ├── index.vue      # 页面入口
@@ -115,8 +113,11 @@ npm run dev
 │   │   │   ├── xxx.router.js  # 页面路由
 │   ├── main.js                # 入口文件 加载组件 初始化等
 │   ├── permission.js          # 权限管理
+│   ├── routes-map.js     # 动态路由页面映射配置，需要将开放平台设置的code与页面做映射
+│   ├── settings.js          # 应用配置文件
 │   └── styles.scss            # 样式初始化入口
 ├── tests                      # 测试
+├── .editorconfig           # 编辑器代码约束文件
 ├── .env.xxx                   # 环境变量配置
 ├── .eslintrc.js               # eslint 配置项
 ├── .babelrc                   # babel-loader 配置
@@ -134,10 +135,10 @@ npm run dev
 页面文件夹命名规范：统一用小写，保证项目有良好的可移植性，可跨平台。Linux 系统是大小写敏感的，而 Windows 系统和 Mac 系统正好相反，大小写不敏感
 
 - 路由命名规范：路由必须是.router.js结尾，如: login.router.js。框架会根据后缀名自动初始化路由。
-- store命名规范：store必须是.store.js结尾，如: user.router.js。
+- store命名规范：store必须是.store.js结尾，如: user.store.js。
 - 页面命名规范：页面入口统一使用index.vue，引入时可以少些文件名
 - 类名规范： 必须是大写开头的骆驼拼写发， 如： MockServer
-- 变量命名规范： 骆驼拼写法， 如：appName
+- 变量命名规范： 驼峰式写法， 如：appName
 - css类名规范： 全小写并使用连字符“-”项链， 如：app- container
 
 更多的代码编写规范，我们已经使用ESlint做好配置，开发过程中，ESlint会自动检查。
@@ -234,6 +235,8 @@ export default {
   path: '/',
   component: Layout,
   redirect: '/home',
+  hidden: true, // hidden为true则不在菜单中显示该路由
+  order: 0, // 路由排序,越小优先级越高，目前只对顶级菜单路由进行排序
   children: [
     {
       path: '/home',
@@ -551,6 +554,33 @@ const actions = {
  我们来看下上面的代码, 相比之前的代码, store 又多了一个键: rootGetters
 rootGetters 就是 vuex 中所有的 getters, 你可以用 `rootGetters['xxxxx']` 来取其他模块的getters 
 
+### iframe内嵌页中打开新tag
+方法1、框架内，引入lib/index.js，调用openNewTag方法即可。传参如下。
+```js
+{
+    title: "新标签",
+    url: "",
+    type: "new-tag"
+  }
+```
+方法2、框架外，也就是内嵌页不是vue-template框架的，可执行如下代码打开新tag
+```js
+window.top.postMessage({type: "newTag", title: "index页面", url: "http://www.alex.com/test/test/index.html", height: 900}, "*") // url为新tag里的iframe地址
+```
+
+### iframe内嵌页访问系统store示例
+```js
+// 发起请求，获取tax_user/getNav的状态
+window.top.postMessage({ name: "tax_user/getNav", type: "storeReq" }, "*") 
+// 监听状态返回
+window.addEventListener("message", function(e){
+	const type = e.data.type;
+	const name = e.data.name;
+	if (type === "storeRes" && name === "tax_user/getNav") { // 需判断返回类型和返回数据name是否是请求有效的
+		console.log("子页面收到消息：", e.data);
+	}
+})
+```
 ### 内置工具箱列表
 
 为了能给开发者提供一个开箱即用、高效的框架，我们在框架中内置了一下常用的工具。
@@ -563,6 +593,8 @@ rootGetters 就是 vuex 中所有的 getters, 你可以用 `rootGetters['xxxxx']
 │   ├── local-storage.js
 │   ├── open-window.js
 │   ├── validate.js
+│   ├── clipboard.js	
+│   ├── request.js	
 ```
 
 #### index.js工具
@@ -778,6 +810,53 @@ export function isString(str)
 export function isArray(arg)
 ```
 
+#### request.js工具
+
+```js
+// 提供post方法，返回promise对象
+export function post(url, data = {}) {
+  return service({
+    url,
+    method: 'post',
+    data: { ...data }
+  })
+}
+
+// 提供get方法，返回promise对象
+export function get(url, data = {}) {
+  return service({
+    url,
+    method: 'get',
+    data: { ...data }
+  })
+}
+
+// 提供postAwait方法，返回async方法
+export async function postAwait(url, data){
+  return await service.post(url, data)
+}
+
+// 提供getAwait方法，返回async方法
+export async function getAwait(url, data){
+  let queryStr = JSON.stringify(data)
+  queryStr = queryStr.replace(/:/g, '=')
+  queryStr = queryStr.replace(/"/g, '')
+  queryStr = queryStr.replace(/,/g, '&')
+  queryStr = queryStr.match(/\{([^)]*)\}/)
+  return await service.get(url+"?"+queryStr[1], JSON.stringify(data))
+}
+```
+
+#### event-bus.js工具，提供另一种临时状态共享能力
+
+```js
+// 在实例中全局监听一个事件
+this.$eBus.on(type, callback)
+// 在实例中全局触发一个事件
+this.$eBus.emit(type, callback)
+// 在实例中全局删除一个事件
+this.$eBus.off(type, callback)
+```
 
 
 ### 内置工具箱的使用
@@ -795,8 +874,84 @@ const token = getToken();
 
 
 ## 常用组件 （持续完善中）
+### Pagination的使用（基于elementui的pagination）
+```js
+<template>
+	<button @click="testFun">查询数据</button>
+	<fx-pagination
+		 url="/table/list"
+		 @fetchData="changeData"
+		 ref="paging"
+		 :params="params"
+		 idx="sdf"
+		 method="get"
+		 position="center"
+		 :pageSizes="[20, 40, 60, 100]"
+		 :defaultProps="{pageNum: 'pageNo', pageSize: 'pageSizes'}"
+		 :totalNumPath="['body', 'total']"
+		 layout="total, sizes, prev, pager, next, jumper">
+	</fx-pagination>
+</teamlpate>
+<script>
+import FxPagination from "@/components/Pagination";
+export default {
+  name: "IframeApp",
+  data () {
+    return {
+      params: {
+          name: "123"
+      }
+    }
+  },
+  components: {
+    FxPagination
+  },
+  methods: {
+    testFun(str) {
+      this.params.name = "patpat";
+      this.$refs.paging.fetchData();
+    },
+    changeData(res) {
+      if (res.head.errorCode === "0") this.list = res.body.items;
+      this.listLoading = false;
+    }
+  }
+};
+</script>
+```
+如上是Pagination翻页组件的完整用法。
+url：必须属性，数据源地址，可以是http形式、绝对路径/aaa/bbb和相对路径
+@fetchData：必须方法，用于在列表页设置列表数据或其它操作，详见如上示例
+ref：选传属性，vue原生属性，用来在列表页主动调用翻页组件的fetchData获取数据，会触发fetchData方法
+params：选传属性，页面的查询条件存储对象
+layout：选传属性，翻页组件的展现细节，配置跟elementui一致，默认是"total, sizes, prev, pager, next, jumper"
+method：选传属性，接口交互的method，默认是"get"
+position：选传属性，翻页组件在块状内的位置，有left、right、center、middle可供选择，默认是right
+ page-sizes：选传属性，每页条数的选择项，默认是[10, 20, 30, 40, 50, 100, 200]
+default-props：选传属性，数据接口参数传递的映射字段，默认是{pageNum: 'pageNum', pageSize: 'pageSize'}
+total-num-path：选传属性，接口返回数据total字段（翻页的灵魂字段）的获取路径，默认是['body', 'total']
+domain-path：选传属性，接口数据的域路径，形式如http://www.baidu.com/aaa，默认是vue.config.js配置的process.env.VUE_APP_JCHL_API
 
-
+## 应用配置说明（settings.js）
+```js
+  whiteList: ['/login', '/404'], // 非登陆状态下的路由白名单，这些页面不用登陆也可以查看
+  title: '税局', // 浏览器tab栏的首部分显示信息，每个路由的title是tab的次级显示信息
+  home: "/", // 主页跳转地址，给系统中的"返回主页"使用
+  protectedPath: { // 保护路由，这里定义的路由，不能出现在静态路由和菜单权限路由中，否则会被忽略
+    iframeRoot: "/iframeApp",
+  },
+  iframeMessage: {  // 目前系统postMessage支持响应的type类型
+    newTag: "newTag", // 在内容页中打开新tag
+    storeReq: "storeReq", // 获取store状态数据
+    storeRes: "storeRes" // 返回store状态数据
+  },
+  showSettings: true, // 是否显示右侧的设置浮动工具
+  tagsView: true, // 是否显示标签
+  fixedHeader: true, // 是否固定头，未兼容，暂不实现
+  sidebarSearch: true, // 是否在菜单栏中显示搜索域
+  dynamicRouter: true, // 是否开启动态路由，对接开放平台可开启，开启后路由表会自动添加到本地路由后面
+  errorLog: ['production', 'development'] // 什么环境下打印日志
+```
 
 ## 使用Mock Server
 

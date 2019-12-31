@@ -195,97 +195,7 @@ var constantRoutes = [{
   path: '*',
   redirect: '/404',
   hidden: true
-}]; // 渲染含有子级的菜单
-
-/**
- * parentMenu
- * 渲染含有子级的菜单
- * menuType: top 顶级菜单， menu: 含有子级的普通菜单，page: 菜单中最一级需要指定具体页面
- */
-
-function parentMenu(item) {
-  var menuType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'menu';
-  var app = SingletonApp.getInstance();
-
-  var _component;
-
-  switch (menuType) {
-    case "top":
-      _component = app.layout;
-      break;
-
-    case "page":
-      _component = {
-        render: function render(c) {
-          return c("router-view");
-        }
-      };
-
-    default:
-      _component = app.pageMap[item.code];
-    //_import(item.code)
-  }
-
-  return {
-    path: item.url,
-    component: _component,
-    name: item.name,
-    meta: {
-      title: item.name,
-      icon: item.imageUrl,
-      affix: item.functionType === 'desk'
-    }
-  };
-}
-
-var generateRouter = function generateRouter(routerList) {
-  var pFunId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-  var pParentId = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-  var routers = [];
-
-  if (Array.isArray(routerList)) {
-    routerList.forEach(function (item, index) {
-      routers.push(parseRouterItem(item, pFunId, pParentId));
-    });
-  }
-
-  return routers;
-};
-
-var parseRouterItem = function parseRouterItem(item, pFunId, pParentId) {
-  var obj;
-  var childs;
-
-  if (!pParentId) {
-    obj = parentMenu(item, 'top');
-
-    if (item.subNodeFlag == 0) {
-      item.name += " "; // 修复控制台输出 路由名称重复的问题
-
-      obj.meta = null; // 修复菜单搜索时，只有一级的菜单在搜索结果列表里显示成两级
-
-      childs = [item];
-      obj.children = generateRouter(childs, item.functioinId, item.parentId);
-    } else {
-      childs = item.childSecFunctioinDTOs;
-      obj.children = generateRouter(childs, item.functioinId, item.parentId);
-    } // 如果顶层路由是'/'，说明是首页，是首页是添加redirect属性
-
-
-    if (/^[\/]{1}$/.test(item.url)) {
-      obj.redirect = childs[0].url;
-    }
-  } else {
-    if (item.subNodeFlag == 0) {
-      obj = parentMenu(item, 'page');
-    } else {
-      obj = parentMenu(item);
-      obj.children = generateRouter(item.childSecFunctioinDTOs, item.functioinId, item.parentId);
-    }
-  }
-
-  return obj;
-};
+}];
 
 var createRouter = function createRouter() {
   return new Router({
@@ -309,16 +219,46 @@ var concatRouter = function concatRouter(routers) {
   constantRoutes.unshift.apply(constantRoutes, _toConsumableArray(routers));
 };
 
+function setItem(key, data) {
+  window.localStorage.setItem(key, JSON.stringify(data));
+}
+function getItem(key) {
+  var value;
+
+  try {
+    value = JSON.parse(window.localStorage.getItem(key));
+  } catch (err) {
+    value = null;
+  }
+
+  return value;
+}
+function removeItem(key) {
+  window.localStorage.removeItem(key);
+}
+
 var state = {
   sidebar: {
-    opened: Cookies.get('tax-sidebar-status') ? !!+Cookies.get('tax-sidebar-status') : true,
+    opened: Cookies.get('tax-sidebar-status') + "" ? !!+Cookies.get('tax-sidebar-status') : true,
+    splitPaneStatus: getItem('tax-sidebar-splitPaneStatus') ? getItem('tax-sidebar-splitPaneStatus') : null,
     withoutAnimation: false
   },
   device: 'desktop'
 };
 var mutations = {
-  TOGGLE_SIDEBAR: function TOGGLE_SIDEBAR(state, isOpened) {
-    state.sidebar.opened = isOpened ? isOpened : !state.sidebar.opened;
+  TOGGLE_SIDEBAR: function TOGGLE_SIDEBAR(state, _ref) {
+    var isOpened = _ref.isOpened,
+        splitPaneStatus = _ref.splitPaneStatus;
+
+    if (isOpened !== undefined) {
+      state.sidebar.opened = isOpened ? !!+isOpened : false;
+    }
+
+    if (splitPaneStatus !== undefined) {
+      state.sidebar.splitPaneStatus = splitPaneStatus;
+      setItem("tax-sidebar-splitPaneStatus", splitPaneStatus);
+    }
+
     state.sidebar.withoutAnimation = false;
 
     if (state.sidebar.opened) {
@@ -337,18 +277,18 @@ var mutations = {
   }
 };
 var actions = {
-  toggleSideBar: function toggleSideBar(_ref) {
-    var commit = _ref.commit;
-    var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+  toggleSideBar: function toggleSideBar(_ref2) {
+    var commit = _ref2.commit;
+    var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     commit('TOGGLE_SIDEBAR', data);
   },
-  closeSideBar: function closeSideBar(_ref2, _ref3) {
-    var commit = _ref2.commit;
-    var withoutAnimation = _ref3.withoutAnimation;
+  closeSideBar: function closeSideBar(_ref3, _ref4) {
+    var commit = _ref3.commit;
+    var withoutAnimation = _ref4.withoutAnimation;
     commit('CLOSE_SIDEBAR', withoutAnimation);
   },
-  toggleDevice: function toggleDevice(_ref4, device) {
-    var commit = _ref4.commit;
+  toggleDevice: function toggleDevice(_ref5, device) {
+    var commit = _ref5.commit;
     commit('TOGGLE_DEVICE', device);
   }
 };
@@ -366,7 +306,10 @@ var state$1 = {
 var mutations$1 = {
   SET_ROUTES: function SET_ROUTES(state, routes) {
     state.addRoutes = routes;
-    state.routes = constantRoutes.concat(routes);
+    state.routes = constantRoutes.concat(routes); // setItem('tax-permission-routes', state.routes) // 持久化存储
+  },
+  UPDATE_ROUTES: function UPDATE_ROUTES(state, routes) {
+    state.routes = routes; // setItem('tax-permission-routes', state.routes) // 持久化存储
   }
 };
 var actions$1 = {
@@ -374,6 +317,14 @@ var actions$1 = {
     var commit = _ref.commit;
     return new Promise(function (resolve) {
       commit('SET_ROUTES', routes);
+      resolve();
+    });
+  },
+  updateRoutes: function updateRoutes(_ref2, _ref3) {
+    var commit = _ref2.commit;
+    var routes = _ref3.routes;
+    return new Promise(function (resolve) {
+      commit('UPDATE_ROUTES', routes);
       resolve();
     });
   },
@@ -481,8 +432,8 @@ var mutations$3 = {
       _iteratorError = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion && _iterator.return != null) {
-          _iterator.return();
+        if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+          _iterator["return"]();
         }
       } finally {
         if (_didIteratorError) {
@@ -511,8 +462,8 @@ var mutations$3 = {
       _iteratorError2 = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-          _iterator2.return();
+        if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+          _iterator2["return"]();
         }
       } finally {
         if (_didIteratorError2) {
@@ -546,8 +497,8 @@ var mutations$3 = {
       _iteratorError3 = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-          _iterator3.return();
+        if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+          _iterator3["return"]();
         }
       } finally {
         if (_didIteratorError3) {
@@ -585,8 +536,8 @@ var mutations$3 = {
       _iteratorError4 = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
-          _iterator4.return();
+        if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+          _iterator4["return"]();
         }
       } finally {
         if (_didIteratorError4) {
@@ -718,24 +669,6 @@ function setToken(token) {
 }
 function removeToken() {
   return Cookies.remove(TokenKey);
-}
-
-function setItem(key, data) {
-  window.localStorage.setItem(key, JSON.stringify(data));
-}
-function getItem(key) {
-  var value;
-
-  try {
-    value = JSON.parse(window.localStorage.getItem(key));
-  } catch (err) {
-    value = null;
-  }
-
-  return value;
-}
-function removeItem(key) {
-  window.localStorage.removeItem(key);
 }
 
 var tools = {
@@ -1331,6 +1264,7 @@ var state$4 = {
   name: '',
   avatar: '',
   nav: getItem('tax-nav-list') ? getItem('tax-nav-list') : [],
+  asyncRoutes: getItem('tax-async-list') ? getItem('tax-async-list') : [],
   info: getItem('tax-user-info') ? getItem('tax-user-info') : null
 };
 var mutations$4 = {
@@ -1353,8 +1287,10 @@ var mutations$4 = {
   TAX_LOGOUT: function TAX_LOGOUT(state) {
     removeItem('tax-user-info');
     removeItem('tax-nav-list');
+    removeItem('tax-async-list');
     Cookies.remove('tax-sidebar-status');
     Cookies.remove('tax-app-id');
+    removeItem('tax-sidebar-splitPaneStatus');
     setToken('');
   },
   TAX_SET_NAME: function TAX_SET_NAME(state, name) {
@@ -1366,47 +1302,41 @@ var mutations$4 = {
   TAX_SET_NAV: function TAX_SET_NAV(state, nav) {
     state.nav = nav;
     setItem('tax-nav-list', nav);
+  },
+  TAX_SET_ASYNC_ROUTE: function TAX_SET_ASYNC_ROUTE(state, routes) {
+    state.asyncRoutes.push(routes);
+    setItem('tax-async-list', state.asyncRoutes);
+  },
+  TAX_REMOVE_ASYNC_ROUTE: function TAX_REMOVE_ASYNC_ROUTE(state) {
+    state.asyncRoutes = [];
+    removeItem('tax-async-list');
   }
 };
 var actions$4 = {
-  login: function login(_ref, userInfo) {
-    var commit, dispatch, loginName, password, remember, url, loginRes, body, head;
+  // async login({ commit, dispatch }, userInfo) {
+  //   const { loginName, password, remember } = userInfo
+  //   const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/userService/loginExt`
+  //   const loginRes = await postAwait(url, { loginName: loginName.trim(), password, remember })
+  //   const { body, head } = loginRes
+  //   if (head.errorCode !== "0") return loginRes
+  //   commit('TAX_SET_TOKEN', body.token)
+  //   commit('TAX_SET_USER_INFO', body)
+  //   setToken(body.token)
+  //   await dispatch('fetchNav')
+  //   return loginRes
+  // },
+  login: function login(_ref, data) {
+    var commit, dispatch;
     return regeneratorRuntime.async(function login$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             commit = _ref.commit, dispatch = _ref.dispatch;
-            loginName = userInfo.loginName, password = userInfo.password, remember = userInfo.remember;
-            url = "".concat(process.env.VUE_APP_JCHL_API, "/gateway/org/back/userService/loginExt");
-            _context.next = 5;
-            return regeneratorRuntime.awrap(postAwait(url, {
-              loginName: loginName.trim(),
-              password: password,
-              remember: remember
-            }));
+            commit('TAX_SET_TOKEN', data.token);
+            commit('TAX_SET_USER_INFO', data);
+            setToken(data.token);
 
-          case 5:
-            loginRes = _context.sent;
-            body = loginRes.body, head = loginRes.head;
-
-            if (!(head.errorCode !== "0")) {
-              _context.next = 9;
-              break;
-            }
-
-            return _context.abrupt("return", loginRes);
-
-          case 9:
-            commit('TAX_SET_TOKEN', body.token);
-            commit('TAX_SET_USER_INFO', body);
-            setToken(body.token);
-            _context.next = 14;
-            return regeneratorRuntime.awrap(dispatch('fetchNav'));
-
-          case 14:
-            return _context.abrupt("return", loginRes);
-
-          case 15:
+          case 4:
           case "end":
             return _context.stop();
         }
@@ -1465,65 +1395,76 @@ var actions$4 = {
     var state = _ref5.state;
     return state.nav;
   },
-  fetchNav: function fetchNav(_ref6) {
-    var commit, state, dispatch, routerList, url, depId, res, body, head, _router;
-
+  // async fetchNav({ commit, state, dispatch }) {
+  //   let routerList
+  //   if (state.nav.length > 0) {
+  //     routerList = state.nav
+  //   } else {
+  //     const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/functionService/querySecFunctionNav`
+  //     // const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav`
+  //     try {
+  //       const { depId } = state.info
+  //       const res = await postAwait(url, { depId })
+  //       const { body, head } = res
+  //       routerList = body
+  //     } catch (err) {
+  //       return null
+  //     }
+  //   }
+  //   const _router = generateRouter(routerList) // 使用@ttk/vue格式化路由
+  //   router.addRoutes(_router) // 使用vue-router动态添加路由
+  //   dispatch('tax_permission/appendRoutes', _router, { root: true }) // 添加到菜单列表、左侧菜单渲染就是根据这个来做渲染的。
+  //   commit('TAX_SET_NAV', routerList) // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
+  //   return routerList
+  // },
+  fetchNav: function fetchNav(_ref6, data) {
+    var commit, state, dispatch;
     return regeneratorRuntime.async(function fetchNav$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
             commit = _ref6.commit, state = _ref6.state, dispatch = _ref6.dispatch;
+            // dispatch('tax_permission/appendRoutes', data.router, { root: true }) // 添加到菜单列表、左侧菜单渲染就是根据这个来做渲染的。
+            commit('TAX_SET_NAV', data.routerList); // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
 
-            if (!(state.nav.length > 0)) {
-              _context3.next = 5;
-              break;
-            }
-
-            routerList = state.nav;
-            _context3.next = 18;
-            break;
-
-          case 5:
-            url = "".concat(process.env.VUE_APP_JCHL_API, "/gateway/org/back/functionService/querySecFunctionNav"); // const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav`
-
-            _context3.prev = 6;
-            depId = state.info.depId;
-            _context3.next = 10;
-            return regeneratorRuntime.awrap(postAwait(url, {
-              depId: depId
-            }));
-
-          case 10:
-            res = _context3.sent;
-            body = res.body, head = res.head;
-            routerList = body;
-            _context3.next = 18;
-            break;
-
-          case 15:
-            _context3.prev = 15;
-            _context3.t0 = _context3["catch"](6);
-            return _context3.abrupt("return", null);
-
-          case 18:
-            _router = generateRouter(routerList); // 使用@ttk/vue格式化路由
-
-            router.addRoutes(_router); // 使用vue-router动态添加路由
-
-            dispatch('tax_permission/appendRoutes', _router, {
-              root: true
-            }); // 添加到菜单列表、左侧菜单渲染就是根据这个来做渲染的。
-
-            commit('TAX_SET_NAV', routerList); // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
-
-            return _context3.abrupt("return", routerList);
-
-          case 23:
+          case 2:
           case "end":
             return _context3.stop();
         }
       }
-    }, null, null, [[6, 15]]);
+    });
+  },
+  setAsyncRoute: function setAsyncRoute(_ref7, data) {
+    var commit, state, dispatch;
+    return regeneratorRuntime.async(function setAsyncRoute$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            commit = _ref7.commit, state = _ref7.state, dispatch = _ref7.dispatch;
+            commit('TAX_SET_ASYNC_ROUTE', data.routerList); // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
+
+          case 2:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    });
+  },
+  removeAsyncRoute: function removeAsyncRoute(_ref8, data) {
+    var commit, state, dispatch;
+    return regeneratorRuntime.async(function removeAsyncRoute$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            commit = _ref8.commit, state = _ref8.state, dispatch = _ref8.dispatch;
+            commit('TAX_REMOVE_ASYNC_ROUTE'); // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
+
+          case 2:
+          case "end":
+            return _context5.stop();
+        }
+      }
+    });
   }
 };
 var tax_user = {
@@ -1564,7 +1505,7 @@ var getViewModules = function getViewModules() {
   var modules = modulesFiles.keys().reduce(function (modules, modulePath) {
     var moduleName = modulePath.replace(/^\.\/(.*)\/(.*)\.store\.\w+$/, '$2');
     var value = modulesFiles(modulePath);
-    modules[moduleName] = value.default;
+    modules[moduleName] = value["default"];
     return modules;
   }, {});
   return modules;
@@ -1587,6 +1528,61 @@ var initStore = function initStore() {
   });
   return store;
 };
+
+var EventBus =
+/*#__PURE__*/
+function () {
+  function EventBus() {
+    _classCallCheck(this, EventBus);
+
+    this._events = {};
+  }
+
+  _createClass(EventBus, [{
+    key: "on",
+    value: function on(type, callback) {
+      if (!this._events.hasOwnProperty(type)) {
+        this._events[type] = [callback];
+      } else {
+        this._events[type].push(callback);
+      }
+    }
+  }, {
+    key: "emit",
+    value: function emit(type, param) {
+      var _this = this;
+
+      if (this._events.hasOwnProperty(type)) {
+        this._events[type].forEach(function (item) {
+          item.apply(_this, [param]);
+        });
+      }
+    }
+  }, {
+    key: "off",
+    value: function off(type, callback) {
+      if (_typeof(this._events[type]) === "object" && Object.prototype.toString.apply(this._events[type]) === "[object Array]") {
+        for (var i = this._events[type].length - 1; i >= 0; i--) {
+          if (this._events[type][i] === callback) {
+            this._events[type].splice(i, 1);
+          }
+        }
+      }
+    }
+  }]);
+
+  return EventBus;
+}();
+
+var eventBus = new EventBus();
+var eventBusPlugin = function eventBusPlugin(V) {
+  return Object.defineProperty(V.prototype, '$eBus', {
+    value: eventBus,
+    writable: true
+  });
+};
+
+Vue.use(eventBusPlugin); //使用封装的event-bus.js
 
 Vue.use(TaxGroupUI);
 var store = initStore();
@@ -1828,4 +1824,4 @@ function isArray(arg) {
   return Array.isArray(arg);
 }
 
-export { SingletonApp, initStore as TaxModules, concatRouter, constantRoutes, generateRouter, get, getAwait, getItem, getToken, handleClipboard, isArray, isExternal, isString, openWindow, post, postAwait, registerFun, removeItem, removeToken, resetRouter, router, service, setItem, setToken, store, tools as utils, validAlphabets, validEmail, validLowerCase, validPhone, validURL, validUpperCase, validUsername };
+export { SingletonApp, initStore as TaxModules, concatRouter, constantRoutes, get, getAwait, getItem, getToken, handleClipboard, isArray, isExternal, isString, openWindow, post, postAwait, registerFun, removeItem, removeToken, resetRouter, router, service, setItem, setToken, store, tools as utils, validAlphabets, validEmail, validLowerCase, validPhone, validURL, validUpperCase, validUsername };

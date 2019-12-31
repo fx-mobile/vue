@@ -5,6 +5,8 @@ import Cookies from 'js-cookie'
 // import getters from './store/getters'
 
 import TaxGroupUI from '@ttk/vue-ui'
+import {eventBusPlugin} from './utils/event-bus';
+Vue.use(eventBusPlugin);//使用封装的event-bus.js
 Vue.use(TaxGroupUI)
 
 const store = initStore()

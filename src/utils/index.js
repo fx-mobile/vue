@@ -389,5 +389,4 @@ export default {
     const sortArr = arr.sort(sortFun(key))
     return sortArr
   }
-
 }
