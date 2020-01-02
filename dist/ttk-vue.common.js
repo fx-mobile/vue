@@ -1,6 +1,6 @@
 /*!
-  * @ttk/vue v1.0.19
-  * (c) 2019 laogong5i0
+  * @ttk/vue v1.0.20
+  * (c) 2020 laogong5i0
   * @license MIT
   */
 'use strict';
@@ -1273,7 +1273,7 @@ var state$4 = {
   avatar: '',
   nav: getItem('tax-nav-list') ? getItem('tax-nav-list') : [],
   asyncRoutes: getItem('tax-async-list') ? getItem('tax-async-list') : [],
-  info: getItem('tax-user-info') ? getItem('tax-user-info') : null
+  info: getItem('tax-user-info') ? getItem('tax-user-info') : {}
 };
 var mutations$4 = {
   TAX_GET_USER_INFO: function TAX_GET_USER_INFO(state) {

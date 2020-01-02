@@ -9,7 +9,7 @@ const state = {
   avatar: '',
   nav: getItem('tax-nav-list') ? getItem('tax-nav-list') : [],
   asyncRoutes: getItem('tax-async-list') ? getItem('tax-async-list') : [],
-  info: getItem('tax-user-info') ? getItem('tax-user-info') : null
+  info: getItem('tax-user-info') ? getItem('tax-user-info') : {}
 }
 
 const mutations = {
