@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import { SingletonApp } from '../application'
+import { SingletonApp, store } from '../application'
 // const _import = require('./_import_' + process.env.NODE_ENV) //获取组件的方法
 Vue.use(Router)
 
@@ -51,6 +51,7 @@ const router = createRouter()
 export const resetRouter = (_router) => {
   const newRouter = createRouter()
   router.matcher = newRouter.matcher // reset router
+  store.dispatch('tax_permission/appendRoutes', [])
 }
 export const concatRouter = (routers) => {
   constantRoutes.unshift(...routers)

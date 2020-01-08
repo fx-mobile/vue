@@ -1,5 +1,5 @@
 /*!
-  * @ttk/vue v1.0.20
+  * @ttk/vue v1.0.21
   * (c) 2020 laogong5i0
   * @license MIT
   */
@@ -220,6 +220,8 @@ var router = createRouter(); // Detail see: https://github.com/vuejs/vue-router/
 var resetRouter = function resetRouter(_router) {
   var newRouter = createRouter();
   router.matcher = newRouter.matcher; // reset router
+
+  store.dispatch('tax_permission/appendRoutes', []);
 };
 var concatRouter = function concatRouter(routers) {
   constantRoutes.unshift.apply(constantRoutes, _toConsumableArray(routers));
