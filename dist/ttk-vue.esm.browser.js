@@ -1,5 +1,5 @@
 /*!
-  * @ttk/vue v1.0.21
+  * @ttk/vue v1.0.22
   * (c) 2020 laogong5i0
   * @license MIT
   */
