@@ -1,6 +1,6 @@
 /*!
-  * @ttk/vue v1.0.18
-  * (c) 2019 laogong5i0
+  * @ttk/vue v1.0.22
+  * (c) 2020 laogong5i0
   * @license MIT
   */
 'use strict';
