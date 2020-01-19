@@ -1,6 +1,6 @@
 {
   "name": "@ttk/vue",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "description": "ttk-vue，提供一个开箱即用的vue框架",
   "main": "dist/ttk-vue.common.js",
   "module": "dist/ttk-vue.esm.js",

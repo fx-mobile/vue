@@ -1,5 +1,5 @@
 /*!
-  * @ttk/vue v1.0.22
+  * @ttk/vue v1.0.23
   * (c) 2020 laogong5i0
   * @license MIT
   */
@@ -1834,6 +1834,7 @@ function isArray(arg) {
   return Array.isArray(arg);
 }
 
+exports.Vue = Vue;
 exports.SingletonApp = SingletonApp;
 exports.TaxModules = initStore;
 exports.concatRouter = concatRouter;

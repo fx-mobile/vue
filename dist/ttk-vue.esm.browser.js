@@ -1,9 +1,10 @@
 /*!
-  * @ttk/vue v1.0.22
+  * @ttk/vue v1.0.23
   * (c) 2020 laogong5i0
   * @license MIT
   */
 import Vue from 'vue';
+export { default as Vue } from 'vue';
 import Router from 'vue-router';
 import Vuex from 'vuex';
 import Cookies from 'js-cookie';
