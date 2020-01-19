@@ -1,4 +1,4 @@
-// export { default as Vue } from 'vue'
+export { default as Vue } from 'vue'
 export { SingletonApp, registerFun, store } from './application'
 export { default as TaxModules } from './store'
 export { default as router } from './router'
