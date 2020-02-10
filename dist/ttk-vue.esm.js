@@ -1,5 +1,5 @@
 /*!
-  * @ttk/vue v1.0.23
+  * @ttk/vue v1.0.25
   * (c) 2020 laogong5i0
   * @license MIT
   */
@@ -8,9 +8,9 @@ export { default as Vue } from 'vue';
 import Router from 'vue-router';
 import Vuex from 'vuex';
 import Cookies from 'js-cookie';
-import axios from 'axios';
 import TaxGroupUI from '@ttk/vue-ui';
 import Clipboard from 'clipboard';
+import axios from 'axios';
 
 function _typeof(obj) {
   if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
@@ -97,10 +97,6 @@ function _objectSpread2(target) {
   return target;
 }
 
-function _slicedToArray(arr, i) {
-  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
-}
-
 function _toConsumableArray(arr) {
   return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
 }
@@ -113,50 +109,12 @@ function _arrayWithoutHoles(arr) {
   }
 }
 
-function _arrayWithHoles(arr) {
-  if (Array.isArray(arr)) return arr;
-}
-
 function _iterableToArray(iter) {
   if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
 }
 
-function _iterableToArrayLimit(arr, i) {
-  if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
-    return;
-  }
-
-  var _arr = [];
-  var _n = true;
-  var _d = false;
-  var _e = undefined;
-
-  try {
-    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-      _arr.push(_s.value);
-
-      if (i && _arr.length === i) break;
-    }
-  } catch (err) {
-    _d = true;
-    _e = err;
-  } finally {
-    try {
-      if (!_n && _i["return"] != null) _i["return"]();
-    } finally {
-      if (_d) throw _e;
-    }
-  }
-
-  return _arr;
-}
-
 function _nonIterableSpread() {
   throw new TypeError("Invalid attempt to spread non-iterable instance");
-}
-
-function _nonIterableRest() {
-  throw new TypeError("Invalid attempt to destructure non-iterable instance");
 }
 
 Vue.use(Router); // const _import = file => {
@@ -222,457 +180,211 @@ var concatRouter = function concatRouter(routers) {
   constantRoutes.unshift.apply(constantRoutes, _toConsumableArray(routers));
 };
 
-function setItem(key, data) {
-  window.localStorage.setItem(key, JSON.stringify(data));
-}
-function getItem(key) {
-  var value;
+// import tax_permission from './modules/tax_permission'
+// import tax_settings from './modules/tax_settings'
+// import tax_tags_view from './modules/tax_tags_view'
+// import tax_user from './modules/tax_user'
+// import getters from './getters'
 
-  try {
-    value = JSON.parse(window.localStorage.getItem(key));
-  } catch (err) {
-    value = null;
-  }
+Vue.use(Vuex); // 获取业务代码中pages文件夹下的store
 
-  return value;
-}
-function removeItem(key) {
-  window.localStorage.removeItem(key);
-}
+var getViewModules = function getViewModules() {
+  var modulesFiles = require.context('@/pages', true, /\.store\.js$/);
 
-var state = {
-  sidebar: {
-    opened: Cookies.get('tax-sidebar-status') + "" ? !!+Cookies.get('tax-sidebar-status') : true,
-    splitPaneStatus: getItem('tax-sidebar-splitPaneStatus') ? getItem('tax-sidebar-splitPaneStatus') : null,
-    withoutAnimation: false
-  },
-  device: 'desktop'
-};
-var mutations = {
-  TOGGLE_SIDEBAR: function TOGGLE_SIDEBAR(state, _ref) {
-    var isOpened = _ref.isOpened,
-        splitPaneStatus = _ref.splitPaneStatus;
+  var modules = modulesFiles.keys().reduce(function (modules, modulePath) {
+    var moduleName = modulePath.replace(/^\.\/(.*)\/(.*)\.store\.\w+$/, '$2');
+    var value = modulesFiles(modulePath);
+    modules[moduleName] = value["default"];
+    return modules;
+  }, {});
+  return modules;
+}; // 获取业务代码中store文件夹下的store
 
-    if (isOpened !== undefined) {
-      state.sidebar.opened = isOpened ? !!+isOpened : false;
-    }
 
-    if (splitPaneStatus !== undefined) {
-      state.sidebar.splitPaneStatus = splitPaneStatus;
-      setItem("tax-sidebar-splitPaneStatus", splitPaneStatus);
-    }
+var getSysModules = function getSysModules() {
+  var modulesFiles = require.context('@/lib/store/modules', true, /\.js$/);
 
-    state.sidebar.withoutAnimation = false;
+  var modules = modulesFiles.keys().reduce(function (modules, modulePath) {
+    var moduleName = modulePath.replace(/^\.\/(.*)\.js$/, '$1');
+    var value = modulesFiles(modulePath);
+    modules[moduleName] = value["default"];
+    return modules;
+  }, {});
+  return modules;
+}; // 获取业务代码中store文件夹下的store
 
-    if (state.sidebar.opened) {
-      Cookies.set('tax-sidebar-status', 1);
-    } else {
-      Cookies.set('tax-sidebar-status', 0);
-    }
-  },
-  CLOSE_SIDEBAR: function CLOSE_SIDEBAR(state, withoutAnimation) {
-    Cookies.set('tax-sidebar-status', 0);
-    state.sidebar.opened = false;
-    state.sidebar.withoutAnimation = withoutAnimation;
-  },
-  TOGGLE_DEVICE: function TOGGLE_DEVICE(state, device) {
-    state.device = device;
-  }
-};
-var actions = {
-  toggleSideBar: function toggleSideBar(_ref2) {
-    var commit = _ref2.commit;
-    var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    commit('TOGGLE_SIDEBAR', data);
-  },
-  closeSideBar: function closeSideBar(_ref3, _ref4) {
-    var commit = _ref3.commit;
-    var withoutAnimation = _ref4.withoutAnimation;
-    commit('CLOSE_SIDEBAR', withoutAnimation);
-  },
-  toggleDevice: function toggleDevice(_ref5, device) {
-    var commit = _ref5.commit;
-    commit('TOGGLE_DEVICE', device);
-  }
-};
-var tax_app = {
-  namespaced: true,
-  state: state,
-  mutations: mutations,
-  actions: actions
+
+var getSysGetters = function getSysGetters() {
+  var modulesFiles = require.context('@/lib/store', true, /getters\.js$/);
+
+  var getters = modulesFiles.keys().reduce(function (getters, modulePath) {
+    var value = modulesFiles(modulePath);
+    getters = Object.assign(getters, value["default"]);
+    return getters;
+  }, {});
+  return getters;
 };
 
-var state$1 = {
-  routes: [],
-  addRoutes: []
-};
-var mutations$1 = {
-  SET_ROUTES: function SET_ROUTES(state, routes) {
-    state.addRoutes = routes;
-    state.routes = constantRoutes.concat(routes); // setItem('tax-permission-routes', state.routes) // 持久化存储
-  },
-  UPDATE_ROUTES: function UPDATE_ROUTES(state, routes) {
-    state.routes = routes; // setItem('tax-permission-routes', state.routes) // 持久化存储
-  }
-};
-var actions$1 = {
-  appendRoutes: function appendRoutes(_ref, routes) {
-    var commit = _ref.commit;
-    return new Promise(function (resolve) {
-      commit('SET_ROUTES', routes);
-      resolve();
-    });
-  },
-  updateRoutes: function updateRoutes(_ref2, _ref3) {
-    var commit = _ref2.commit;
-    var routes = _ref3.routes;
-    return new Promise(function (resolve) {
-      commit('UPDATE_ROUTES', routes);
-      resolve();
-    });
-  },
-  getRoutes: function getRoutes() {
-    return state$1.routes;
-  }
-};
-var tax_permission = {
-  namespaced: true,
-  state: state$1,
-  mutations: mutations$1,
-  actions: actions$1
-};
+var initStore = function initStore() {
+  var _viewModules = getViewModules();
 
-// import variables from '@/styles/element-variables.scss'
-// import defaultSettings from '@/settings'
-var defaultSettings;
-
-try {
-  var modulesFiles = require.context('@/', true, /settings\.js$/);
-
-  var settingFiles = modulesFiles.keys();
-
-  if (settingFiles.length == 1) {
-    defaultSettings = modulesFiles(settingFiles[0]);
-  } else {
-    throw 'src文件夹下必须有且只有一个settings.js文件，并做好设置';
-  }
-} catch (err) {
-  throw new Error("src/settings.js\u6587\u4EF6\u9519\u8BEF\uFF0C\u8BF7\u68C0\u67E5\u8BE5\u6587\u4EF6\u662F\u5426\u6B63\u786E\u914D\u7F6E\n".concat(err));
-}
-
-var _defaultSettings = defaultSettings,
-    showSettings = _defaultSettings.showSettings,
-    tagsView = _defaultSettings.tagsView,
-    fixedHeader = _defaultSettings.fixedHeader,
-    sidebarSearch = _defaultSettings.sidebarSearch;
-var state$2 = {
-  showSettings: showSettings,
-  tagsView: tagsView,
-  fixedHeader: fixedHeader,
-  sidebarSearch: sidebarSearch
-};
-var mutations$2 = {
-  CHANGE_SETTING: function CHANGE_SETTING(state, _ref) {
-    var key = _ref.key,
-        value = _ref.value;
-
-    if (state.hasOwnProperty(key)) {
-      state[key] = value;
-    }
-  }
-};
-var actions$2 = {
-  changeSetting: function changeSetting(_ref2, data) {
-    var commit = _ref2.commit;
-    commit('CHANGE_SETTING', data);
-  }
-};
-var tax_settings = {
-  namespaced: true,
-  state: state$2,
-  mutations: mutations$2,
-  actions: actions$2
-};
-
-var state$3 = {
-  visitedViews: [],
-  cachedViews: []
-};
-var mutations$3 = {
-  ADD_VISITED_VIEW: function ADD_VISITED_VIEW(state, view) {
-    if (state.visitedViews.some(function (v) {
-      return v.path === view.path;
-    })) { return; }
-    state.visitedViews.push(Object.assign({}, view, {
-      title: view.meta.title || 'no-name'
-    }));
-  },
-  ADD_CACHED_VIEW: function ADD_CACHED_VIEW(state, view) {
-    if (state.cachedViews.includes(view.name)) { return; }
-
-    if (!view.meta.noCache) {
-      state.cachedViews.push(view.name);
-    }
-  },
-  DEL_VISITED_VIEW: function DEL_VISITED_VIEW(state, view) {
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
-
-    try {
-      for (var _iterator = state.visitedViews.entries()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        var _step$value = _slicedToArray(_step.value, 2),
-            i = _step$value[0],
-            v = _step$value[1];
-
-        if (v.path === view.path) {
-          state.visitedViews.splice(i, 1);
-          break;
-        }
-      }
-    } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-          _iterator["return"]();
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
-    }
-  },
-  DEL_CACHED_VIEW: function DEL_CACHED_VIEW(state, view) {
-    var _iteratorNormalCompletion2 = true;
-    var _didIteratorError2 = false;
-    var _iteratorError2 = undefined;
-
-    try {
-      for (var _iterator2 = state.cachedViews[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-        var i = _step2.value;
-
-        if (i === view.name) {
-          var index = state.cachedViews.indexOf(i);
-          state.cachedViews.splice(index, 1);
-          break;
-        }
-      }
-    } catch (err) {
-      _didIteratorError2 = true;
-      _iteratorError2 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
-          _iterator2["return"]();
-        }
-      } finally {
-        if (_didIteratorError2) {
-          throw _iteratorError2;
-        }
-      }
-    }
-  },
-  DEL_OTHERS_VISITED_VIEWS: function DEL_OTHERS_VISITED_VIEWS(state, view) {
-    state.visitedViews = state.visitedViews.filter(function (v) {
-      return v.meta.affix || v.path === view.path;
-    });
-  },
-  DEL_OTHERS_CACHED_VIEWS: function DEL_OTHERS_CACHED_VIEWS(state, view) {
-    var _iteratorNormalCompletion3 = true;
-    var _didIteratorError3 = false;
-    var _iteratorError3 = undefined;
-
-    try {
-      for (var _iterator3 = state.cachedViews[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-        var i = _step3.value;
-
-        if (i === view.name) {
-          var index = state.cachedViews.indexOf(i);
-          state.cachedViews = state.cachedViews.slice(index, index + 1);
-          break;
-        }
-      }
-    } catch (err) {
-      _didIteratorError3 = true;
-      _iteratorError3 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-          _iterator3["return"]();
-        }
-      } finally {
-        if (_didIteratorError3) {
-          throw _iteratorError3;
-        }
-      }
-    }
-  },
-  DEL_ALL_VISITED_VIEWS: function DEL_ALL_VISITED_VIEWS(state) {
-    // keep affix tags
-    var affixTags = state.visitedViews.filter(function (tag) {
-      return tag.meta.affix;
-    });
-    state.visitedViews = affixTags;
-  },
-  DEL_ALL_CACHED_VIEWS: function DEL_ALL_CACHED_VIEWS(state) {
-    state.cachedViews = [];
-  },
-  UPDATE_VISITED_VIEW: function UPDATE_VISITED_VIEW(state, view) {
-    var _iteratorNormalCompletion4 = true;
-    var _didIteratorError4 = false;
-    var _iteratorError4 = undefined;
-
-    try {
-      for (var _iterator4 = state.visitedViews[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-        var v = _step4.value;
-
-        if (v.path === view.path) {
-          v = Object.assign(v, view);
-          break;
-        }
-      }
-    } catch (err) {
-      _didIteratorError4 = true;
-      _iteratorError4 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
-          _iterator4["return"]();
-        }
-      } finally {
-        if (_didIteratorError4) {
-          throw _iteratorError4;
-        }
-      }
-    }
-  }
-};
-var actions$3 = {
-  addView: function addView(_ref, view) {
-    var dispatch = _ref.dispatch;
-    dispatch('addVisitedView', view);
-    dispatch('addCachedView', view);
-  },
-  addVisitedView: function addVisitedView(_ref2, view) {
-    var commit = _ref2.commit;
-    commit('ADD_VISITED_VIEW', view);
-  },
-  addCachedView: function addCachedView(_ref3, view) {
-    var commit = _ref3.commit;
-    commit('ADD_CACHED_VIEW', view);
-  },
-  delView: function delView(_ref4, view) {
-    var dispatch = _ref4.dispatch,
-        state = _ref4.state;
-    return new Promise(function (resolve) {
-      dispatch('delVisitedView', view);
-      dispatch('delCachedView', view);
-      resolve({
-        visitedViews: _toConsumableArray(state.visitedViews),
-        cachedViews: _toConsumableArray(state.cachedViews)
-      });
-    });
-  },
-  delVisitedView: function delVisitedView(_ref5, view) {
-    var commit = _ref5.commit,
-        state = _ref5.state;
-    return new Promise(function (resolve) {
-      commit('DEL_VISITED_VIEW', view);
-      resolve(_toConsumableArray(state.visitedViews));
-    });
-  },
-  delCachedView: function delCachedView(_ref6, view) {
-    var commit = _ref6.commit,
-        state = _ref6.state;
-    return new Promise(function (resolve) {
-      commit('DEL_CACHED_VIEW', view);
-      resolve(_toConsumableArray(state.cachedViews));
-    });
-  },
-  delOthersViews: function delOthersViews(_ref7, view) {
-    var dispatch = _ref7.dispatch,
-        state = _ref7.state;
-    return new Promise(function (resolve) {
-      dispatch('delOthersVisitedViews', view);
-      dispatch('delOthersCachedViews', view);
-      resolve({
-        visitedViews: _toConsumableArray(state.visitedViews),
-        cachedViews: _toConsumableArray(state.cachedViews)
-      });
-    });
-  },
-  delOthersVisitedViews: function delOthersVisitedViews(_ref8, view) {
-    var commit = _ref8.commit,
-        state = _ref8.state;
-    return new Promise(function (resolve) {
-      commit('DEL_OTHERS_VISITED_VIEWS', view);
-      resolve(_toConsumableArray(state.visitedViews));
-    });
-  },
-  delOthersCachedViews: function delOthersCachedViews(_ref9, view) {
-    var commit = _ref9.commit,
-        state = _ref9.state;
-    return new Promise(function (resolve) {
-      commit('DEL_OTHERS_CACHED_VIEWS', view);
-      resolve(_toConsumableArray(state.cachedViews));
-    });
-  },
-  delAllViews: function delAllViews(_ref10, view) {
-    var dispatch = _ref10.dispatch,
-        state = _ref10.state;
-    return new Promise(function (resolve) {
-      dispatch('delAllVisitedViews', view);
-      dispatch('delAllCachedViews', view);
-      resolve({
-        visitedViews: _toConsumableArray(state.visitedViews),
-        cachedViews: _toConsumableArray(state.cachedViews)
-      });
-    });
-  },
-  delAllVisitedViews: function delAllVisitedViews(_ref11) {
-    var commit = _ref11.commit,
-        state = _ref11.state;
-    return new Promise(function (resolve) {
-      commit('DEL_ALL_VISITED_VIEWS');
-      resolve(_toConsumableArray(state.visitedViews));
-    });
-  },
-  delAllCachedViews: function delAllCachedViews(_ref12) {
-    var commit = _ref12.commit,
-        state = _ref12.state;
-    return new Promise(function (resolve) {
-      commit('DEL_ALL_CACHED_VIEWS');
-      resolve(_toConsumableArray(state.cachedViews));
-    });
-  },
-  updateVisitedView: function updateVisitedView(_ref13, view) {
-    var commit = _ref13.commit;
-    commit('UPDATE_VISITED_VIEW', view);
-  }
-};
-var tax_tags_view = {
-  namespaced: true,
-  state: state$3,
-  mutations: mutations$3,
-  actions: actions$3
-};
-
-var TokenKey = 'tax_group_app_token';
-function getToken() {
-  return Cookies.get(TokenKey);
-}
-function setToken(token) {
-  var expires = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 7;
-  return Cookies.set(TokenKey, token, {
-    expires: expires
+  var sysModules = getSysModules();
+  var getters = getSysGetters();
+  var store = new Vuex.Store({
+    modules: _objectSpread2({}, _viewModules, {}, sysModules),
+    getters: getters
   });
-}
-function removeToken() {
-  return Cookies.remove(TokenKey);
-}
+  return store;
+};
+
+var EventBus =
+/*#__PURE__*/
+function () {
+  function EventBus() {
+    _classCallCheck(this, EventBus);
+
+    this._events = {};
+  }
+
+  _createClass(EventBus, [{
+    key: "on",
+    value: function on(type, callback) {
+      if (!this._events.hasOwnProperty(type)) {
+        this._events[type] = [callback];
+      } else {
+        this._events[type].push(callback);
+      }
+    }
+  }, {
+    key: "emit",
+    value: function emit(type, param) {
+      var _this = this;
+
+      if (this._events.hasOwnProperty(type)) {
+        this._events[type].forEach(function (item) {
+          item.apply(_this, [param]);
+        });
+      }
+    }
+  }, {
+    key: "off",
+    value: function off(type, callback) {
+      if (_typeof(this._events[type]) === "object" && Object.prototype.toString.apply(this._events[type]) === "[object Array]") {
+        for (var i = this._events[type].length - 1; i >= 0; i--) {
+          if (this._events[type][i] === callback) {
+            this._events[type].splice(i, 1);
+          }
+        }
+      }
+    }
+  }]);
+
+  return EventBus;
+}();
+
+var eventBus = new EventBus();
+var eventBusPlugin = function eventBusPlugin(V) {
+  return Object.defineProperty(V.prototype, '$eBus', {
+    value: eventBus,
+    writable: true
+  });
+};
+
+Vue.use(eventBusPlugin); //使用封装的event-bus.js
+
+Vue.use(TaxGroupUI);
+var store = initStore();
+
+var SingletonApp =
+/*#__PURE__*/
+function () {
+  function SingletonApp() {
+    _classCallCheck(this, SingletonApp);
+
+    this.vueApp = null;
+    this.router = null;
+    this.layout = null;
+    this.setting = null;
+    this.pageMap = null;
+  }
+
+  _createClass(SingletonApp, [{
+    key: "config",
+    value: function config(_ref) {
+      var setting = _ref.setting,
+          layout = _ref.layout,
+          pageMap = _ref.pageMap,
+          appId = _ref.appId;
+      this.setting = setting;
+      this.layout = layout;
+      this.pageMap = pageMap;
+      this.appId = appId;
+      Cookies.set('tax-app-id', appId, {
+        expires: 7
+      }); // 设置appId到cookie，供ajax调用时使用
+    }
+  }, {
+    key: "getSeting",
+    value: function getSeting() {
+      return this.setting;
+    }
+  }, {
+    key: "setLayout",
+    value: function setLayout(component) {
+      this.layout = component;
+    }
+  }, {
+    key: "start",
+    value: function start(_store) {
+      if (!this.vueApp) {
+        this.vueApp = new Vue({
+          el: '#app',
+          router: router,
+          store: store,
+          render: function render(h) {
+            return h('div', {
+              attrs: {
+                id: 'app'
+              }
+            }, [h('router-view')]);
+          }
+        });
+      } else {
+        throw 'Vue 已经实例化，请勿重复实例化。';
+      }
+    }
+  }], [{
+    key: "getInstance",
+    value: function getInstance() {
+      if (!this.instance) {
+        this.instance = new SingletonApp();
+      }
+
+      return this.instance;
+    }
+  }]);
+
+  return SingletonApp;
+}();
+/**
+ * 注入新的函数，用于框架常用函数的扩展，建议在程序启动前注入，避免运行时找不到注入的函数。
+ * @param {string} funName
+ * @param {function} fun
+ */
+
+
+var registerFun = function registerFun(funName, fun) {
+  if (typeof funName !== 'string') {
+    throw "\u6CE8\u5165\u51FD\u6570\u65F6\u7B2C\u4E00\u4E2A\u53C2\u6570\u5FC5\u987B\u662F String \u7C7B\u578B\uFF0C\u5F53\u524D\u4E3A: ".concat(funName);
+  }
+
+  if (typeof fun !== 'function') {
+    throw "\u6CE8\u5165\u51FD\u6570\u65F6\u7B2C\u4E8C\u4E2A\u53C2\u6570\u5FC5\u987B\u662F function \u7C7B\u578B\uFF0C\u5F53\u524D\u4E3A: ".concat(fun);
+  }
+
+  var instance = SingletonApp.getInstance();
+  instance[funName] = fun;
+};
 
 var tools = {
   /**
@@ -1097,6 +809,91 @@ var tools = {
   }
 };
 
+var TokenKey = 'tax_group_app_token';
+function getToken() {
+  return Cookies.get(TokenKey);
+}
+function setToken(token) {
+  var expires = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 7;
+  return Cookies.set(TokenKey, token, {
+    expires: expires
+  });
+}
+function removeToken() {
+  return Cookies.remove(TokenKey);
+}
+
+function clipboardSuccess() {
+  Vue.prototype.$message({
+    message: 'Copy successfully',
+    type: 'success',
+    duration: 1500
+  });
+}
+
+function clipboardError() {
+  Vue.prototype.$message({
+    message: 'Copy failed',
+    type: 'error'
+  });
+}
+
+function handleClipboard(_text, event) {
+  var clipboard = new Clipboard(event.target, {
+    text: function text() {
+      return _text;
+    }
+  });
+  clipboard.on('success', function () {
+    clipboardSuccess();
+    clipboard.destroy();
+  });
+  clipboard.on('error', function () {
+    clipboardError();
+    clipboard.destroy();
+  });
+  clipboard.onClick(event);
+}
+
+function setItem(key, data) {
+  window.localStorage.setItem(key, JSON.stringify(data));
+}
+function getItem(key) {
+  var value;
+
+  try {
+    value = JSON.parse(window.localStorage.getItem(key));
+  } catch (err) {
+    value = null;
+  }
+
+  return value;
+}
+function removeItem(key) {
+  window.localStorage.removeItem(key);
+}
+
+/**
+ * @param {Sting} url
+ * @param {Sting} title
+ * @param {Number} w
+ * @param {Number} h
+ */
+function openWindow(url, title, w, h) {
+  // Fixes dual-screen position                            Most browsers       Firefox
+  var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : screen.left;
+  var dualScreenTop = window.screenTop !== undefined ? window.screenTop : screen.top;
+  var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+  var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+  var left = width / 2 - w / 2 + dualScreenLeft;
+  var top = height / 2 - h / 2 + dualScreenTop;
+  var newWindow = window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=yes, copyhistory=no, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left); // Puts focus on the newWindow
+
+  if (window.focus) {
+    newWindow.focus();
+  }
+}
+
 var uuid = tools.uuid; // create an axios instance
 
 var service = axios.create({
@@ -1262,478 +1059,6 @@ function getAwait(url) {
       }
     }
   });
-}
-
-var state$4 = {
-  token: getToken(),
-  name: '',
-  avatar: '',
-  nav: getItem('tax-nav-list') ? getItem('tax-nav-list') : [],
-  asyncRoutes: getItem('tax-async-list') ? getItem('tax-async-list') : [],
-  info: getItem('tax-user-info') ? getItem('tax-user-info') : {}
-};
-var mutations$4 = {
-  TAX_GET_USER_INFO: function TAX_GET_USER_INFO(state) {
-    return state.info;
-  },
-  TAX_SET_USER_INFO: function TAX_SET_USER_INFO(state, userInfo) {
-    state.info = userInfo;
-    setItem("tax-user-info", userInfo);
-    return state.info;
-  },
-  TAX_SET_USER_INFO_FROM_LOCAL: function TAX_SET_USER_INFO_FROM_LOCAL(state) {
-    var userInfo = getItem('tax-user-info');
-    return state.info = userInfo;
-  },
-  TAX_SET_TOKEN: function TAX_SET_TOKEN(state, token) {
-    state.token = token;
-    setToken(token);
-  },
-  TAX_LOGOUT: function TAX_LOGOUT(state) {
-    removeItem('tax-user-info');
-    removeItem('tax-nav-list');
-    removeItem('tax-async-list');
-    Cookies.remove('tax-sidebar-status');
-    Cookies.remove('tax-app-id');
-    removeItem('tax-sidebar-splitPaneStatus');
-    setToken('');
-  },
-  TAX_SET_NAME: function TAX_SET_NAME(state, name) {
-    state.name = name;
-  },
-  TAX_SET_AVATAR: function TAX_SET_AVATAR(state, avatar) {
-    state.avatar = avatar;
-  },
-  TAX_SET_NAV: function TAX_SET_NAV(state, nav) {
-    state.nav = nav;
-    setItem('tax-nav-list', nav);
-  },
-  TAX_SET_ASYNC_ROUTE: function TAX_SET_ASYNC_ROUTE(state, routes) {
-    state.asyncRoutes.push(routes);
-    setItem('tax-async-list', state.asyncRoutes);
-  },
-  TAX_REMOVE_ASYNC_ROUTE: function TAX_REMOVE_ASYNC_ROUTE(state) {
-    state.asyncRoutes = [];
-    removeItem('tax-async-list');
-  }
-};
-var actions$4 = {
-  // async login({ commit, dispatch }, userInfo) {
-  //   const { loginName, password, remember } = userInfo
-  //   const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/userService/loginExt`
-  //   const loginRes = await postAwait(url, { loginName: loginName.trim(), password, remember })
-  //   const { body, head } = loginRes
-  //   if (head.errorCode !== "0") return loginRes
-  //   commit('TAX_SET_TOKEN', body.token)
-  //   commit('TAX_SET_USER_INFO', body)
-  //   setToken(body.token)
-  //   await dispatch('fetchNav')
-  //   return loginRes
-  // },
-  login: function login(_ref, data) {
-    var commit, dispatch;
-    return regeneratorRuntime.async(function login$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            commit = _ref.commit, dispatch = _ref.dispatch;
-            commit('TAX_SET_TOKEN', data.token);
-            commit('TAX_SET_USER_INFO', data);
-            setToken(data.token);
-
-          case 4:
-          case "end":
-            return _context.stop();
-        }
-      }
-    });
-  },
-  clearLoginInfo: function clearLoginInfo(_ref2) {
-    var commit = _ref2.commit,
-        dispatch = _ref2.dispatch;
-    commit('TAX_LOGOUT');
-    removeToken();
-    resetRouter();
-    dispatch('tax_tags_view/delAllViews', null, {
-      root: true
-    });
-  },
-  // user logout
-  logout: function logout(_ref3) {
-    var commit, state, dispatch, url, token, res;
-    return regeneratorRuntime.async(function logout$(_context2) {
-      while (1) {
-        switch (_context2.prev = _context2.next) {
-          case 0:
-            commit = _ref3.commit, state = _ref3.state, dispatch = _ref3.dispatch;
-            url = "".concat(process.env.VUE_APP_JCHL_API, "/gateway/org/back/userService/logout");
-            token = getToken();
-            _context2.next = 5;
-            return regeneratorRuntime.awrap(postAwait(url, {
-              token: token
-            }));
-
-          case 5:
-            res = _context2.sent;
-            dispatch('tax_user/clearLoginInfo', null);
-            return _context2.abrupt("return", res);
-
-          case 8:
-          case "end":
-            return _context2.stop();
-        }
-      }
-    });
-  },
-  // remove token
-  resetToken: function resetToken(_ref4) {
-    var commit = _ref4.commit,
-        dispatch = _ref4.dispatch;
-    return new Promise(function (resolve) {
-      dispatch('tax_user/clearLoginInfo', null, {
-        root: true
-      });
-      resolve();
-    });
-  },
-  getNav: function getNav(_ref5) {
-    var state = _ref5.state;
-    return state.nav;
-  },
-  // async fetchNav({ commit, state, dispatch }) {
-  //   let routerList
-  //   if (state.nav.length > 0) {
-  //     routerList = state.nav
-  //   } else {
-  //     const url = `${process.env.VUE_APP_JCHL_API}/gateway/org/back/functionService/querySecFunctionNav`
-  //     // const url = `${process.env.VUE_APP_BASE_API}/back/functionService/querySecFunctionNav`
-  //     try {
-  //       const { depId } = state.info
-  //       const res = await postAwait(url, { depId })
-  //       const { body, head } = res
-  //       routerList = body
-  //     } catch (err) {
-  //       return null
-  //     }
-  //   }
-  //   const _router = generateRouter(routerList) // 使用@ttk/vue格式化路由
-  //   router.addRoutes(_router) // 使用vue-router动态添加路由
-  //   dispatch('tax_permission/appendRoutes', _router, { root: true }) // 添加到菜单列表、左侧菜单渲染就是根据这个来做渲染的。
-  //   commit('TAX_SET_NAV', routerList) // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
-  //   return routerList
-  // },
-  fetchNav: function fetchNav(_ref6, data) {
-    var commit, state, dispatch;
-    return regeneratorRuntime.async(function fetchNav$(_context3) {
-      while (1) {
-        switch (_context3.prev = _context3.next) {
-          case 0:
-            commit = _ref6.commit, state = _ref6.state, dispatch = _ref6.dispatch;
-            // dispatch('tax_permission/appendRoutes', data.router, { root: true }) // 添加到菜单列表、左侧菜单渲染就是根据这个来做渲染的。
-            commit('TAX_SET_NAV', data.routerList); // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
-
-          case 2:
-          case "end":
-            return _context3.stop();
-        }
-      }
-    });
-  },
-  setAsyncRoute: function setAsyncRoute(_ref7, data) {
-    var commit, state, dispatch;
-    return regeneratorRuntime.async(function setAsyncRoute$(_context4) {
-      while (1) {
-        switch (_context4.prev = _context4.next) {
-          case 0:
-            commit = _ref7.commit, state = _ref7.state, dispatch = _ref7.dispatch;
-            commit('TAX_SET_ASYNC_ROUTE', data.routerList); // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
-
-          case 2:
-          case "end":
-            return _context4.stop();
-        }
-      }
-    });
-  },
-  removeAsyncRoute: function removeAsyncRoute(_ref8, data) {
-    var commit, state, dispatch;
-    return regeneratorRuntime.async(function removeAsyncRoute$(_context5) {
-      while (1) {
-        switch (_context5.prev = _context5.next) {
-          case 0:
-            commit = _ref8.commit, state = _ref8.state, dispatch = _ref8.dispatch;
-            commit('TAX_REMOVE_ASYNC_ROUTE'); // 將返回來的路由设置到localStore，刷新页面时会优先获取这个值来渲染路由
-
-          case 2:
-          case "end":
-            return _context5.stop();
-        }
-      }
-    });
-  }
-};
-var tax_user = {
-  namespaced: true,
-  state: state$4,
-  mutations: mutations$4,
-  actions: actions$4
-};
-
-var getters = {
-  tax_sidebar: function tax_sidebar(state) {
-    return state.tax_app.sidebar;
-  },
-  tax_device: function tax_device(state) {
-    return state.tax_app.device;
-  },
-  tax_token: function tax_token(state) {
-    return state.tax_user.token;
-  },
-  tax_user_info: function tax_user_info(state) {
-    return state.tax_user.info;
-  },
-  nav_router: function nav_router(state) {
-    return state.tax_user.nav;
-  },
-  tax_permission_routes: function tax_permission_routes(state) {
-    return state.tax_permission.routes;
-  } // tax_avatar: state => state.tax_user.avatar,
-  // tax_name: state => state.tax_user.name
-
-};
-
-Vue.use(Vuex); // 获取业务代码中views文件夹下的store
-
-var getViewModules = function getViewModules() {
-  var modulesFiles = require.context('@/pages', true, /\.store\.js$/);
-
-  var modules = modulesFiles.keys().reduce(function (modules, modulePath) {
-    var moduleName = modulePath.replace(/^\.\/(.*)\/(.*)\.store\.\w+$/, '$2');
-    var value = modulesFiles(modulePath);
-    modules[moduleName] = value["default"];
-    return modules;
-  }, {});
-  return modules;
-};
-
-var taxModules = {
-  tax_app: tax_app,
-  tax_permission: tax_permission,
-  tax_settings: tax_settings,
-  tax_tags_view: tax_tags_view,
-  tax_user: tax_user
-};
-
-var initStore = function initStore() {
-  var _viewModules = getViewModules();
-
-  var store = new Vuex.Store({
-    modules: _objectSpread2({}, _viewModules, {}, taxModules),
-    getters: getters
-  });
-  return store;
-};
-
-var EventBus =
-/*#__PURE__*/
-function () {
-  function EventBus() {
-    _classCallCheck(this, EventBus);
-
-    this._events = {};
-  }
-
-  _createClass(EventBus, [{
-    key: "on",
-    value: function on(type, callback) {
-      if (!this._events.hasOwnProperty(type)) {
-        this._events[type] = [callback];
-      } else {
-        this._events[type].push(callback);
-      }
-    }
-  }, {
-    key: "emit",
-    value: function emit(type, param) {
-      var _this = this;
-
-      if (this._events.hasOwnProperty(type)) {
-        this._events[type].forEach(function (item) {
-          item.apply(_this, [param]);
-        });
-      }
-    }
-  }, {
-    key: "off",
-    value: function off(type, callback) {
-      if (_typeof(this._events[type]) === "object" && Object.prototype.toString.apply(this._events[type]) === "[object Array]") {
-        for (var i = this._events[type].length - 1; i >= 0; i--) {
-          if (this._events[type][i] === callback) {
-            this._events[type].splice(i, 1);
-          }
-        }
-      }
-    }
-  }]);
-
-  return EventBus;
-}();
-
-var eventBus = new EventBus();
-var eventBusPlugin = function eventBusPlugin(V) {
-  return Object.defineProperty(V.prototype, '$eBus', {
-    value: eventBus,
-    writable: true
-  });
-};
-
-Vue.use(eventBusPlugin); //使用封装的event-bus.js
-
-Vue.use(TaxGroupUI);
-var store = initStore();
-
-var SingletonApp =
-/*#__PURE__*/
-function () {
-  function SingletonApp() {
-    _classCallCheck(this, SingletonApp);
-
-    this.vueApp = null;
-    this.router = null;
-    this.layout = null;
-    this.setting = null;
-    this.pageMap = null;
-  }
-
-  _createClass(SingletonApp, [{
-    key: "config",
-    value: function config(_ref) {
-      var setting = _ref.setting,
-          layout = _ref.layout,
-          pageMap = _ref.pageMap,
-          appId = _ref.appId;
-      this.setting = setting;
-      this.layout = layout;
-      this.pageMap = pageMap;
-      this.appId = appId;
-      Cookies.set('tax-app-id', appId, {
-        expires: 7
-      }); // 设置appId到cookie，供ajax调用时使用
-    }
-  }, {
-    key: "getSeting",
-    value: function getSeting() {
-      return this.setting;
-    }
-  }, {
-    key: "setLayout",
-    value: function setLayout(component) {
-      this.layout = component;
-    }
-  }, {
-    key: "start",
-    value: function start(_store) {
-      if (!this.vueApp) {
-        this.vueApp = new Vue({
-          el: '#app',
-          router: router,
-          store: store,
-          render: function render(h) {
-            return h('div', {
-              attrs: {
-                id: 'app'
-              }
-            }, [h('router-view')]);
-          }
-        });
-      } else {
-        throw 'Vue 已经实例化，请勿重复实例化。';
-      }
-    }
-  }], [{
-    key: "getInstance",
-    value: function getInstance() {
-      if (!this.instance) {
-        this.instance = new SingletonApp();
-      }
-
-      return this.instance;
-    }
-  }]);
-
-  return SingletonApp;
-}();
-/**
- * 注入新的函数，用于框架常用函数的扩展，建议在程序启动前注入，避免运行时找不到注入的函数。
- * @param {string} funName
- * @param {function} fun
- */
-
-
-var registerFun = function registerFun(funName, fun) {
-  if (typeof funName !== 'string') {
-    throw "\u6CE8\u5165\u51FD\u6570\u65F6\u7B2C\u4E00\u4E2A\u53C2\u6570\u5FC5\u987B\u662F String \u7C7B\u578B\uFF0C\u5F53\u524D\u4E3A: ".concat(funName);
-  }
-
-  if (typeof fun !== 'function') {
-    throw "\u6CE8\u5165\u51FD\u6570\u65F6\u7B2C\u4E8C\u4E2A\u53C2\u6570\u5FC5\u987B\u662F function \u7C7B\u578B\uFF0C\u5F53\u524D\u4E3A: ".concat(fun);
-  }
-
-  var instance = SingletonApp.getInstance();
-  instance[funName] = fun;
-};
-
-function clipboardSuccess() {
-  Vue.prototype.$message({
-    message: 'Copy successfully',
-    type: 'success',
-    duration: 1500
-  });
-}
-
-function clipboardError() {
-  Vue.prototype.$message({
-    message: 'Copy failed',
-    type: 'error'
-  });
-}
-
-function handleClipboard(_text, event) {
-  var clipboard = new Clipboard(event.target, {
-    text: function text() {
-      return _text;
-    }
-  });
-  clipboard.on('success', function () {
-    clipboardSuccess();
-    clipboard.destroy();
-  });
-  clipboard.on('error', function () {
-    clipboardError();
-    clipboard.destroy();
-  });
-  clipboard.onClick(event);
-}
-
-/**
- * @param {Sting} url
- * @param {Sting} title
- * @param {Number} w
- * @param {Number} h
- */
-function openWindow(url, title, w, h) {
-  // Fixes dual-screen position                            Most browsers       Firefox
-  var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : screen.left;
-  var dualScreenTop = window.screenTop !== undefined ? window.screenTop : screen.top;
-  var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
-  var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
-  var left = width / 2 - w / 2 + dualScreenLeft;
-  var top = height / 2 - h / 2 + dualScreenTop;
-  var newWindow = window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=yes, copyhistory=no, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left); // Puts focus on the newWindow
-
-  if (window.focus) {
-    newWindow.focus();
-  }
 }
 
 /**
